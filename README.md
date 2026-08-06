@@ -1,6 +1,6 @@
 # Foldwalls · 浮岛桌面
 
-Foldwalls（浮岛桌面）是一个原生 macOS 壁纸应用，用 SwiftUI、AppKit 和 AVFoundation 实现。当前版本为 0.2.0。
+Foldwalls（浮岛桌面）是一个原生 macOS 壁纸应用，用 SwiftUI、AppKit 和 AVFoundation 实现。当前版本为 0.3.0。
 
 ## 当前功能
 

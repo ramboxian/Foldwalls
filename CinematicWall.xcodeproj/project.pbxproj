@@ -326,7 +326,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.2.0;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.foldwalls.app;
 				PRODUCT_NAME = Foldwalls;
 				SUPPORTED_PLATFORMS = macosx;
@@ -352,7 +352,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.2.0;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.foldwalls.app;
 				PRODUCT_NAME = Foldwalls;
 				SUPPORTED_PLATFORMS = macosx;
