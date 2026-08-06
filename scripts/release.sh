@@ -109,6 +109,41 @@ if [[ ! -d "$app_path" ]]; then
   exit 1
 fi
 
+# codesign --verify alone does not prove that a Hardened Runtime app can load
+# every embedded framework. In particular, an ad-hoc host may pass structural
+# verification and still be killed by dyld when loading Sparkle. Exercise the
+# packaged executable against an empty library and require it to remain alive.
+cold_launch_root="$release_work_dir/cold-launch-library"
+cold_launch_log="$release_work_dir/cold-launch.log"
+rm -rf "$cold_launch_root"
+mkdir -p "$cold_launch_root"
+
+FOLDWALLS_LIBRARY_ROOT="$cold_launch_root" \
+  "$app_path/Contents/MacOS/Foldwalls" >"$cold_launch_log" 2>&1 &
+cold_launch_pid=$!
+cold_launch_failed=false
+for _ in 1 2 3 4 5 6; do
+  sleep 1
+  if ! kill -0 "$cold_launch_pid" 2>/dev/null; then
+    cold_launch_failed=true
+    break
+  fi
+done
+
+if [[ "$cold_launch_failed" == true ]]; then
+  set +e
+  wait "$cold_launch_pid"
+  cold_launch_status=$?
+  set -e
+  echo "Foldwalls failed the clean cold-launch check (status $cold_launch_status)." >&2
+  sed -n '1,160p' "$cold_launch_log" >&2
+  exit 1
+fi
+
+kill -TERM "$cold_launch_pid" 2>/dev/null || true
+wait "$cold_launch_pid" 2>/dev/null || true
+echo "Clean cold-launch check passed."
+
 ditto -c -k --sequesterRsrc --keepParent "$app_path" "$zip_path"
 
 rm -rf "$staging_dir"
