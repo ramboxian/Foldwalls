@@ -31,31 +31,52 @@ private func decodeArtwork(at url: URL, maxPixelSize: Int = 1_920) -> DecodedArt
 private final class ArtworkImageCache {
     static let shared = ArtworkImageCache()
 
-    private let cache = NSCache<NSURL, NSImage>()
+    private let cache = NSCache<NSString, NSImage>()
+    private var inFlightLoads: [String: Task<DecodedArtwork?, Never>] = [:]
 
     private init() {
-        cache.countLimit = 48
-        cache.totalCostLimit = 128 * 1_024 * 1_024
+        cache.countLimit = 96
+        cache.totalCostLimit = 192 * 1_024 * 1_024
     }
 
-    func image(for url: URL) -> NSImage? {
-        cache.object(forKey: url as NSURL)
+    func image(for url: URL, maxPixelSize: Int) async -> NSImage? {
+        let key = cacheKey(for: url, maxPixelSize: maxPixelSize)
+        if let cached = cache.object(forKey: key as NSString) { return cached }
+        if let existingLoad = inFlightLoads[key] {
+            return await existingLoad.value?.image
+        }
+
+        let load = Task.detached(priority: .utility) {
+            decodeArtwork(at: url, maxPixelSize: maxPixelSize)
+        }
+        inFlightLoads[key] = load
+        let decoded = await load.value
+        inFlightLoads[key] = nil
+
+        guard let decoded else { return nil }
+        cache.setObject(decoded.image, forKey: key as NSString, cost: decoded.cost)
+        return decoded.image
     }
 
-    func insert(_ image: NSImage, for url: URL, cost: Int) {
-        cache.setObject(image, forKey: url as NSURL, cost: cost)
+    private func cacheKey(for url: URL, maxPixelSize: Int) -> String {
+        "\(url.standardizedFileURL.absoluteString)#\(maxPixelSize)"
     }
 }
 
 struct ArtworkView: View {
     @EnvironmentObject private var library: WallpaperLibrary
+    @Environment(\.displayScale) private var displayScale
     let item: WallpaperItem
     var cornerRadius: CGFloat = CinematicTheme.cardRadius
 
     @State private var image: NSImage?
+    @State private var loadedSourceKey = ""
 
     var body: some View {
         GeometryReader { proxy in
+            let pixelSize = decodePixelSize(for: proxy.size)
+            let sourceKey = item.thumbnailPath ?? item.remoteThumbnailURL?.absoluteString ?? item.localPath
+
             ZStack {
                 LinearGradient(
                     colors: [
@@ -70,6 +91,7 @@ struct ArtworkView: View {
                 if let image {
                     Image(nsImage: image)
                         .resizable()
+                        .interpolation(.medium)
                         .aspectRatio(contentMode: .fill)
                         .frame(width: proxy.size.width, height: proxy.size.height)
                         .clipped()
@@ -81,26 +103,29 @@ struct ArtworkView: View {
                     endPoint: .bottom
                 )
             }
+            .task(id: "\(item.id.uuidString)-\(sourceKey)-\(pixelSize)") {
+                if loadedSourceKey != sourceKey {
+                    image = nil
+                    loadedSourceKey = sourceKey
+                }
+
+                guard let artworkURL = await library.resolvedArtworkURL(for: item),
+                      !Task.isCancelled else { return }
+                let loadedImage = await ArtworkImageCache.shared.image(
+                    for: artworkURL,
+                    maxPixelSize: pixelSize
+                )
+                guard !Task.isCancelled, let loadedImage else { return }
+                image = loadedImage
+            }
         }
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-        .task(id: "\(item.id.uuidString)-\(item.thumbnailPath ?? item.remoteThumbnailURL?.absoluteString ?? item.localPath)") {
-            guard let artworkURL = await library.resolvedArtworkURL(for: item) else { return }
-            if let cached = ArtworkImageCache.shared.image(for: artworkURL) {
-                image = cached
-                return
-            }
+    }
 
-            let url = artworkURL
-            let decoded = await Task.detached(priority: .userInitiated) {
-                decodeArtwork(at: url)
-            }.value
-
-            guard !Task.isCancelled,
-                  let decoded else { return }
-            ArtworkImageCache.shared.insert(decoded.image, for: url, cost: decoded.cost)
-            image = decoded.image
-        }
+    private func decodePixelSize(for size: CGSize) -> Int {
+        let requested = max(1, Int(ceil(max(size.width, size.height) * displayScale)))
+        return [512, 768, 1_024, 1_280, 1_600, 1_920].first(where: { requested <= $0 }) ?? 1_920
     }
 }
 

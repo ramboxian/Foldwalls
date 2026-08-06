@@ -40,6 +40,8 @@ final class WallpaperLibrary: ObservableObject {
     private var mediaDirectoryWatcher: DispatchSourceFileSystemObject?
     private var folderSynchronizationTask: Task<Void, Never>?
     private var thumbnailTasks: [UUID: Task<URL?, Never>] = [:]
+    private var pendingThumbnailPaths: [UUID: String] = [:]
+    private var thumbnailPersistenceTask: Task<Void, Never>?
     private var videoPreviewTasks: [UUID: Task<URL?, Never>] = [:]
     private var originalVideoTasks: [UUID: Task<URL?, Never>] = [:]
 
@@ -738,9 +740,33 @@ final class WallpaperLibrary: ObservableObject {
     }
 
     private func updateThumbnailPath(_ path: String, for id: UUID) {
-        guard let index = items.firstIndex(where: { $0.id == id }),
-              items[index].thumbnailPath != path else { return }
-        items[index].thumbnailPath = path
+        guard items.contains(where: { $0.id == id && $0.thumbnailPath != path }) else { return }
+        pendingThumbnailPaths[id] = path
+        guard thumbnailPersistenceTask == nil else { return }
+
+        thumbnailPersistenceTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(650))
+            guard !Task.isCancelled else { return }
+            self?.flushPendingThumbnailPaths()
+        }
+    }
+
+    private func flushPendingThumbnailPaths() {
+        thumbnailPersistenceTask = nil
+        guard !pendingThumbnailPaths.isEmpty else { return }
+
+        let pending = pendingThumbnailPaths
+        pendingThumbnailPaths.removeAll(keepingCapacity: true)
+        var updatedItems = items
+        var didChange = false
+        for index in updatedItems.indices {
+            guard let path = pending[updatedItems[index].id],
+                  updatedItems[index].thumbnailPath != path else { continue }
+            updatedItems[index].thumbnailPath = path
+            didChange = true
+        }
+        guard didChange else { return }
+        items = updatedItems
         saveLibrary()
     }
 

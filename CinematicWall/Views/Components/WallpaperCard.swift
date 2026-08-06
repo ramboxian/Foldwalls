@@ -21,14 +21,13 @@ struct WallpaperCard: View {
     var body: some View {
         ZStack(alignment: .bottomLeading) {
             ZStack {
-                ArtworkView(item: item, cornerRadius: CinematicTheme.cardRadius)
+                ArtworkView(item: item, cornerRadius: 0)
                 if item.kind == .video && shouldPlayHoverPreview {
                     HeroMediaView(item: item, isPlaying: true, videoAsset: .compressedPreview)
                         .transition(.opacity)
                 }
             }
-                .aspectRatio(16 / 9, contentMode: .fit)
-                .clipShape(RoundedRectangle(cornerRadius: CinematicTheme.cardRadius, style: .continuous))
+            .aspectRatio(16 / 9, contentMode: .fit)
 
             LinearGradient(
                 stops: [
@@ -38,7 +37,6 @@ struct WallpaperCard: View {
                 startPoint: .top,
                 endPoint: .bottom
             )
-            .clipShape(RoundedRectangle(cornerRadius: CinematicTheme.cardRadius, style: .continuous))
 
             if let rank {
                 Text("\(rank)")
@@ -111,15 +109,20 @@ struct WallpaperCard: View {
                 .transition(.opacity.combined(with: .scale(scale: 0.92, anchor: .topTrailing)))
             }
         }
+        .clipShape(RoundedRectangle(cornerRadius: CinematicTheme.cardRadius, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: CinematicTheme.cardRadius, style: .continuous)
-                .strokeBorder(
+            let outline = RoundedRectangle(cornerRadius: CinematicTheme.cardRadius, style: .continuous)
+            if isActive || isHovering {
+                outline.strokeBorder(
                     CinematicTheme.specularEdge(
-                        intensity: isActive ? 1.35 : (isHovering ? 1.0 : 0.42),
+                        intensity: isActive ? 1.35 : 1.0,
                         angle: reflectionAngle
                     ),
                     lineWidth: isActive ? 1.35 : 0.85
                 )
+            } else {
+                outline.strokeBorder(.white.opacity(0.08), lineWidth: 0.75)
+            }
         }
         .shadow(
             color: .black.opacity(isHovering ? 0.34 : 0),

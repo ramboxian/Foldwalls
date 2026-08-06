@@ -212,6 +212,7 @@ struct RootView: View {
     @State private var selectedCategory = "全部"
     @State private var exploreOrdering: ExploreOrdering = .latest
     @State private var heroIsVisible = true
+    @State private var exploreMastheadIsVisible = true
     @State private var homeStoryIsVisible = false
     @State private var homeScrollOffset: CGFloat = 0
     @State private var homeHeroOrder: [UUID] = []
@@ -1836,7 +1837,10 @@ struct RootView: View {
         return Group {
             if let featured {
                 ZStack {
-                    HeroMediaView(item: featured, isPlaying: destination == .explore && selectedItem == nil)
+                    HeroMediaView(
+                        item: featured,
+                        isPlaying: destination == .explore && selectedItem == nil && exploreMastheadIsVisible
+                    )
                         .frame(height: height)
                         .clipped()
 
@@ -1884,6 +1888,9 @@ struct RootView: View {
                 }
                 .frame(height: height)
                 .contentShape(Rectangle())
+                .trackScrollVisibility(threshold: 0.08) { isVisible in
+                    exploreMastheadIsVisible = isVisible
+                }
             }
         }
     }
