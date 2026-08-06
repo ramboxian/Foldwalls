@@ -18,7 +18,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     }
 
     var brandName: String {
-        text("Foldwalls", "浮岛桌面")
+        "Foldwalls"
     }
 
     static var current: AppLanguage {

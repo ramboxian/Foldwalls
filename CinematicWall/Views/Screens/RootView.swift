@@ -1600,7 +1600,7 @@ struct RootView: View {
                         .strokeBorder(CinematicTheme.specularEdge(intensity: 0.72), lineWidth: 0.8)
                 }
                 .shadow(color: .black.opacity(0.38), radius: 34, y: 18)
-                .accessibilityLabel(language.text("Foldwalls film", "浮岛桌面影片"))
+                .accessibilityLabel(language.text("Foldwalls film", "Foldwalls 影片"))
                 .trackScrollVisibility(threshold: 0.35) { isVisible in
                     homeStoryIsVisible = isVisible
                 }

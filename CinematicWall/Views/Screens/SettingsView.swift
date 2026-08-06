@@ -453,7 +453,7 @@ struct SettingsView: View {
 
                 Text(language.text(
                     "Foldwalls is built with SwiftUI, AppKit, and AVFoundation. Your imported media stays on this Mac.",
-                    "浮岛桌面由 SwiftUI、AppKit 和 AVFoundation 构建。你导入的图片与视频始终保存在这台 Mac 上。"
+                    "Foldwalls 由 SwiftUI、AppKit 和 AVFoundation 构建。你导入的图片与视频始终保存在这台 Mac 上。"
                 ))
                 .font(.system(size: 10, weight: .medium))
                 .foregroundStyle(CinematicTheme.tertiaryText)
@@ -533,7 +533,7 @@ struct SettingsView: View {
 
     private var updateTitle: String {
         if let release = updateManager.release {
-            return language.text("Foldwalls \(release.version) is available", "浮岛桌面 \(release.version) 可更新")
+            return language.text("Foldwalls \(release.version) is available", "Foldwalls \(release.version) 可更新")
         }
         return language.text("Software Update", "软件更新")
     }
@@ -951,7 +951,7 @@ struct NowPlayingPanelView: View {
 
             Text(language.text("Your Desktop Is Waiting", "桌面正在等待一个画面"))
                 .font(.system(size: 19, weight: .bold))
-            Text(language.text("Choose from the Foldwalls collection,\nor import your own images and videos.", "从浮岛桌面精选中选择，\n或导入你自己的图片与视频。"))
+            Text(language.text("Choose from the Foldwalls collection,\nor import your own images and videos.", "从 Foldwalls 精选中选择，\n或导入你自己的图片与视频。"))
                 .font(.system(size: 11))
                 .foregroundStyle(CinematicTheme.secondaryText)
                 .multilineTextAlignment(.center)
@@ -959,7 +959,7 @@ struct NowPlayingPanelView: View {
             Button {
                 openMainWindow()
             } label: {
-                Label(language.text("Open Foldwalls", "打开浮岛桌面"), systemImage: "arrow.up.right")
+                Label(language.text("Open Foldwalls", "打开 Foldwalls"), systemImage: "arrow.up.right")
             }
             .buttonStyle(CinematicButtonStyle(prominent: true))
 

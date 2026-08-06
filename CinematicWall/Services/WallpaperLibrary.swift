@@ -155,7 +155,7 @@ final class WallpaperLibrary: ObservableObject {
         let language = AppLanguage.current
         let panel = NSOpenPanel()
         panel.title = language.text("Import Wallpaper", "导入壁纸")
-        panel.message = language.text("Choose images or videos. Files will be copied into your private Foldwalls library.", "选择图片或视频，文件会复制到浮岛桌面的私人资料库。")
+        panel.message = language.text("Choose images or videos. Files will be copied into your private Foldwalls library.", "选择图片或视频，文件会复制到 Foldwalls 的私人资料库。")
         panel.prompt = language.text("Import", "导入")
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = false

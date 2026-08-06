@@ -52,7 +52,7 @@ struct UpdateReleaseNotesView: View {
                         .background(CinematicTheme.success.opacity(0.88), in: Circle())
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(language.text("Foldwalls Update", "浮岛桌面更新"))
+                        Text(language.text("Foldwalls Update", "Foldwalls 更新"))
                             .font(.system(size: 19, weight: .bold, design: .rounded))
                         Text(versionLine)
                             .font(.system(size: 11, weight: .semibold))
