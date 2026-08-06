@@ -1,0 +1,14 @@
+.build/
+.build-signed/
+.build-update/
+.build-release/
+.build-universal/
+DerivedData/
+.release-work/
+.tools/
+*.xcuserstate
+xcuserdata/
+.DS_Store
+dist/
+outputs/
+sanity-studio/node_modules/

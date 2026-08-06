@@ -1,0 +1,28 @@
+{
+  "name": "foldwalls-sanity-studio",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "import:local": "sanity exec scripts/import-local-library.mjs --with-user-token",
+    "import:batch:20260806-evening": "sanity exec scripts/import-batch-2026-08-06-evening.mjs --with-user-token",
+    "previews:generate": "sanity exec scripts/generate-video-previews.mjs --with-user-token",
+    "migrate:groups": "sanity exec scripts/migrate-home-groups.mjs --with-user-token",
+    "verify:import": "sanity exec scripts/verify-import.mjs --with-user-token"
+  },
+  "dependencies": {
+    "@sanity/ui": "^3.5.1",
+    "@sanity/vision": "^6.9.0",
+    "react": "^19.2.2",
+    "react-dom": "^19.2.2",
+    "sanity": "^6.9.0",
+    "styled-components": "^6.1.15",
+    "xlsx": "file:vendor/xlsx-0.20.3.tgz"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "typescript": "^5.9.3"
+  }
+}

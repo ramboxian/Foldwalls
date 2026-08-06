@@ -1,0 +1,407 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* CinematicWallApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* CinematicWallApp.swift */; };
+		A10000000000000000000002 /* WallpaperItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* WallpaperItem.swift */; };
+		A10000000000000000000003 /* CatalogProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* CatalogProvider.swift */; };
+		A10000000000000000000004 /* WallpaperLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* WallpaperLibrary.swift */; };
+		A10000000000000000000005 /* WallpaperEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* WallpaperEngine.swift */; };
+		A10000000000000000000006 /* CinematicTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* CinematicTheme.swift */; };
+		A10000000000000000000007 /* ArtworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* ArtworkView.swift */; };
+		A10000000000000000000008 /* WallpaperCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008 /* WallpaperCard.swift */; };
+		A10000000000000000000009 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* RootView.swift */; };
+		A1000000000000000000000A /* WallpaperDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000A /* WallpaperDetailView.swift */; };
+		A1000000000000000000000B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000000B /* SettingsView.swift */; };
+		A1000000000000000000000F /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* AppLanguage.swift */; };
+		A10000000000000000000010 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* AppIcon.icns */; };
+		A10000000000000000000011 /* BrandLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* BrandLogo.png */; };
+		A10000000000000000000012 /* HomeStory.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016 /* HomeStory.mp4 */; };
+		A10000000000000000000013 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017 /* InfoPlist.strings */; };
+		A10000000000000000000014 /* UpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001A /* UpdateManager.swift */; };
+		A10000000000000000000015 /* UpdateViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001B /* UpdateViews.swift */; };
+		A10000000000000000000016 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = J10000000000000000000002 /* Sparkle */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B10000000000000000000001 /* CinematicWallApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinematicWallApp.swift; sourceTree = "<group>"; };
+		B10000000000000000000002 /* WallpaperItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperItem.swift; sourceTree = "<group>"; };
+		B10000000000000000000003 /* CatalogProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogProvider.swift; sourceTree = "<group>"; };
+		B10000000000000000000004 /* WallpaperLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperLibrary.swift; sourceTree = "<group>"; };
+		B10000000000000000000005 /* WallpaperEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperEngine.swift; sourceTree = "<group>"; };
+		B10000000000000000000006 /* CinematicTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinematicTheme.swift; sourceTree = "<group>"; };
+		B10000000000000000000007 /* ArtworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkView.swift; sourceTree = "<group>"; };
+		B10000000000000000000008 /* WallpaperCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperCard.swift; sourceTree = "<group>"; };
+		B10000000000000000000009 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		B1000000000000000000000A /* WallpaperDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperDetailView.swift; sourceTree = "<group>"; };
+		B1000000000000000000000B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B1000000000000000000000C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B1000000000000000000000D /* CinematicWall.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CinematicWall.entitlements; sourceTree = "<group>"; };
+		B1000000000000000000000E /* Foldwalls.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Foldwalls.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000012 /* AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLanguage.swift; sourceTree = "<group>"; };
+		B10000000000000000000013 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
+		B10000000000000000000014 /* AppIcon.svg */ = {isa = PBXFileReference; lastKnownFileType = image.svg; path = AppIcon.svg; sourceTree = "<group>"; };
+		B10000000000000000000015 /* BrandLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BrandLogo.png; sourceTree = "<group>"; };
+		B10000000000000000000016 /* HomeStory.mp4 */ = {isa = PBXFileReference; lastKnownFileType = video.mp4; path = HomeStory.mp4; sourceTree = "<group>"; };
+		B10000000000000000000018 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B10000000000000000000019 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		B1000000000000000000001A /* UpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateManager.swift; sourceTree = "<group>"; };
+		B1000000000000000000001B /* UpdateViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateViews.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D10000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000016 /* Sparkle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C10000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				C10000000000000000000002 /* CinematicWall */,
+				C10000000000000000000008 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C10000000000000000000002 /* CinematicWall */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000001 /* CinematicWallApp.swift */,
+				C10000000000000000000003 /* Models */,
+				C10000000000000000000004 /* Services */,
+				C10000000000000000000005 /* Theme */,
+				C10000000000000000000006 /* Views */,
+				C1000000000000000000000A /* Resources */,
+				B1000000000000000000000C /* Info.plist */,
+				B1000000000000000000000D /* CinematicWall.entitlements */,
+			);
+			path = CinematicWall;
+			sourceTree = "<group>";
+		};
+		C10000000000000000000003 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000012 /* AppLanguage.swift */,
+				B10000000000000000000002 /* WallpaperItem.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		C10000000000000000000004 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000003 /* CatalogProvider.swift */,
+				B10000000000000000000004 /* WallpaperLibrary.swift */,
+				B10000000000000000000005 /* WallpaperEngine.swift */,
+				B1000000000000000000001A /* UpdateManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		C10000000000000000000005 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000006 /* CinematicTheme.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		C10000000000000000000006 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C10000000000000000000007 /* Components */,
+				C10000000000000000000009 /* Screens */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		C10000000000000000000007 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000007 /* ArtworkView.swift */,
+				B10000000000000000000008 /* WallpaperCard.swift */,
+				B1000000000000000000001B /* UpdateViews.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		C10000000000000000000008 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B1000000000000000000000E /* Foldwalls.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C10000000000000000000009 /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000009 /* RootView.swift */,
+				B1000000000000000000000A /* WallpaperDetailView.swift */,
+				B1000000000000000000000B /* SettingsView.swift */,
+			);
+			path = Screens;
+			sourceTree = "<group>";
+		};
+		C1000000000000000000000A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000013 /* AppIcon.icns */,
+				B10000000000000000000014 /* AppIcon.svg */,
+				B10000000000000000000015 /* BrandLogo.png */,
+				B10000000000000000000016 /* HomeStory.mp4 */,
+				B10000000000000000000017 /* InfoPlist.strings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E10000000000000000000001 /* CinematicWall */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = H10000000000000000000002 /* Build configuration list for PBXNativeTarget "CinematicWall" */;
+			buildPhases = (
+				D10000000000000000000002 /* Sources */,
+				D10000000000000000000001 /* Frameworks */,
+				D10000000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CinematicWall;
+			packageProductDependencies = (
+				J10000000000000000000002 /* Sparkle */,
+			);
+			productName = Foldwalls;
+			productReference = B1000000000000000000000E /* Foldwalls.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F10000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 2660;
+				TargetAttributes = {
+					E10000000000000000000001 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+				};
+			};
+			buildConfigurationList = H10000000000000000000001 /* Build configuration list for PBXProject "CinematicWall" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				"zh-Hans",
+				Base,
+			);
+			mainGroup = C10000000000000000000001;
+			packageReferences = (
+				J10000000000000000000001 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = C10000000000000000000008 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E10000000000000000000001 /* CinematicWall */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D10000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000010 /* AppIcon.icns in Resources */,
+				A10000000000000000000011 /* BrandLogo.png in Resources */,
+				A10000000000000000000012 /* HomeStory.mp4 in Resources */,
+				A10000000000000000000013 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D10000000000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* CinematicWallApp.swift in Sources */,
+				A10000000000000000000002 /* WallpaperItem.swift in Sources */,
+				A10000000000000000000003 /* CatalogProvider.swift in Sources */,
+				A10000000000000000000004 /* WallpaperLibrary.swift in Sources */,
+				A10000000000000000000005 /* WallpaperEngine.swift in Sources */,
+				A10000000000000000000006 /* CinematicTheme.swift in Sources */,
+				A10000000000000000000007 /* ArtworkView.swift in Sources */,
+				A10000000000000000000008 /* WallpaperCard.swift in Sources */,
+				A10000000000000000000009 /* RootView.swift in Sources */,
+				A1000000000000000000000A /* WallpaperDetailView.swift in Sources */,
+				A1000000000000000000000B /* SettingsView.swift in Sources */,
+				A1000000000000000000000F /* AppLanguage.swift in Sources */,
+				A10000000000000000000014 /* UpdateManager.swift in Sources */,
+				A10000000000000000000015 /* UpdateViews.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		B10000000000000000000017 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B10000000000000000000018 /* en */,
+				B10000000000000000000019 /* zh-Hans */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		G10000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		G10000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		G10000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				AD_HOC_CODE_SIGNING_ALLOWED = YES;
+				CODE_SIGN_ENTITLEMENTS = CinematicWall/CinematicWall.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = CinematicWall/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foldwalls.app;
+				PRODUCT_NAME = Foldwalls;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		G10000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				AD_HOC_CODE_SIGNING_ALLOWED = YES;
+				CODE_SIGN_ENTITLEMENTS = CinematicWall/CinematicWall.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = CinematicWall/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foldwalls.app;
+				PRODUCT_NAME = Foldwalls;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		H10000000000000000000001 /* Build configuration list for PBXProject "CinematicWall" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G10000000000000000000001 /* Debug */,
+				G10000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		H10000000000000000000002 /* Build configuration list for PBXNativeTarget "CinematicWall" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G10000000000000000000003 /* Debug */,
+				G10000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		J10000000000000000000001 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 2.9.5;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		J10000000000000000000002 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = J10000000000000000000001 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = F10000000000000000000001 /* Project object */;
+}

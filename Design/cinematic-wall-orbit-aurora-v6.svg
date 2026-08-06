@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="spectrum" x1="430" y1="590" x2="800" y2="235" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF3C6E"/>
+      <stop offset="0.17" stop-color="#FF6A35"/>
+      <stop offset="0.31" stop-color="#FFD84A"/>
+      <stop offset="0.47" stop-color="#B93CFF"/>
+      <stop offset="0.68" stop-color="#4457FF"/>
+      <stop offset="0.84" stop-color="#00D9FF"/>
+      <stop offset="1" stop-color="#8BFFEA"/>
+    </linearGradient>
+    <radialGradient id="violetBloom" cx="0" cy="0" r="1" gradientTransform="translate(548 456) rotate(36) scale(190 150)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7A37FF" stop-opacity="0.98"/>
+      <stop offset="0.42" stop-color="#E43BFF" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#E43BFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cyanBloom" cx="0" cy="0" r="1" gradientTransform="translate(672 314) rotate(128) scale(165 126)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#24E8FF" stop-opacity="0.96"/>
+      <stop offset="0.46" stop-color="#326BFF" stop-opacity="0.68"/>
+      <stop offset="1" stop-color="#326BFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="coralBloom" cx="0" cy="0" r="1" gradientTransform="translate(664 512) rotate(-164) scale(176 112)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF634C" stop-opacity="0.98"/>
+      <stop offset="0.44" stop-color="#FF247F" stop-opacity="0.70"/>
+      <stop offset="1" stop-color="#FF247F" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="limeBloom" cx="0" cy="0" r="1" gradientTransform="translate(524 292) rotate(22) scale(132 98)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EFFF5B" stop-opacity="0.94"/>
+      <stop offset="0.46" stop-color="#32F6A0" stop-opacity="0.66"/>
+      <stop offset="1" stop-color="#32F6A0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="amberBloom" cx="0" cy="0" r="1" gradientTransform="translate(746 442) rotate(152) scale(142 102)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFD84C" stop-opacity="0.92"/>
+      <stop offset="0.48" stop-color="#FF713D" stop-opacity="0.62"/>
+      <stop offset="1" stop-color="#FF713D" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow" x="-65%" y="-65%" width="230%" height="230%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="34"/>
+    </filter>
+    <filter id="wideGlow" x="-80%" y="-80%" width="260%" height="260%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="58"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" fill="#050505"/>
+
+  <!-- Large aurora light field beneath the displaced surface. -->
+  <g filter="url(#wideGlow)" opacity="0.84">
+    <ellipse cx="524" cy="292" rx="132" ry="98" fill="url(#limeBloom)"/>
+    <ellipse cx="548" cy="456" rx="190" ry="150" fill="url(#violetBloom)"/>
+    <ellipse cx="672" cy="314" rx="165" ry="126" fill="url(#cyanBloom)"/>
+    <ellipse cx="664" cy="512" rx="176" ry="112" fill="url(#coralBloom)"/>
+    <ellipse cx="746" cy="442" rx="142" ry="102" fill="url(#amberBloom)"/>
+  </g>
+
+  <!-- A saturated spectrum silhouette gives the blur a readable core. -->
+  <path d="M524 280H674A70 70 0 0 1 744 350V500H634A110 110 0 0 1 524 390V280Z"
+        fill="url(#spectrum)" filter="url(#softGlow)" opacity="0.98"/>
+  <path d="M524 280H674A70 70 0 0 1 744 350V500H634A110 110 0 0 1 524 390V280Z"
+        fill="url(#spectrum)" opacity="0.78"/>
+
+  <!-- The original four-surface construction remains unchanged. -->
+  <path d="M350 280H500V390A110 110 0 0 1 390 500H280V350A70 70 0 0 1 350 280Z" fill="#F7F7F2"/>
+  <path d="M560 244H710A70 70 0 0 1 780 314V464H670A110 110 0 0 1 560 354V244Z" fill="#F7F7F2"/>
+  <path d="M280 524H390A110 110 0 0 1 500 634V744H350A70 70 0 0 1 280 674V524Z" fill="#F7F7F2"/>
+  <path d="M524 524H634A110 110 0 0 1 744 634V674A70 70 0 0 1 674 744H524V524Z" fill="#F7F7F2"/>
+</svg>

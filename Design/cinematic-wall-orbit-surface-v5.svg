@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="shift" x1="524" y1="500" x2="744" y2="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF4F46"/>
+      <stop offset="0.52" stop-color="#6A5CFF"/>
+      <stop offset="1" stop-color="#20D6FF"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" fill="#050505"/>
+
+  <!-- Top left: square mass resolved by one circular inner turn. -->
+  <path d="M350 280H500V390A110 110 0 0 1 390 500H280V350A70 70 0 0 1 350 280Z" fill="#F7F7F2"/>
+
+  <!-- Registration echo beneath the shifted top-right module. -->
+  <path d="M524 280H674A70 70 0 0 1 744 350V500H634A110 110 0 0 1 524 390V280Z" fill="url(#shift)"/>
+  <path d="M542 262H692A70 70 0 0 1 762 332V482H652A110 110 0 0 1 542 372V262Z" fill="#F7F7F2"/>
+
+  <!-- Bottom pair. Their small optical offsets keep the mark alive without breaking the system. -->
+  <path d="M280 524H390A110 110 0 0 1 500 634V744H350A70 70 0 0 1 280 674V524Z" fill="#F7F7F2"/>
+  <path d="M524 524H634A110 110 0 0 1 744 634V674A70 70 0 0 1 674 744H524V524Z" fill="#F7F7F2"/>
+</svg>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <clipPath id="colourModule">
+      <path d="M542 262H692A70 70 0 0 1 762 332V482H652A110 110 0 0 1 542 372V262Z"/>
+    </clipPath>
+    <linearGradient id="colourBase" x1="542" y1="482" x2="762" y2="262" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF3B76"/>
+      <stop offset="0.34" stop-color="#8B3DFF"/>
+      <stop offset="0.67" stop-color="#3F65FF"/>
+      <stop offset="1" stop-color="#13DDF2"/>
+    </linearGradient>
+    <radialGradient id="cyan" cx="0" cy="0" r="1" gradientTransform="translate(704 294) rotate(90) scale(118 126)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#42F5FF"/>
+      <stop offset="1" stop-color="#42F5FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="yellow" cx="0" cy="0" r="1" gradientTransform="translate(750 382) rotate(140) scale(108 94)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF263"/>
+      <stop offset="1" stop-color="#FFF263" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="coral" cx="0" cy="0" r="1" gradientTransform="translate(650 476) rotate(-80) scale(118 124)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF514A"/>
+      <stop offset="1" stop-color="#FF514A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="violet" cx="0" cy="0" r="1" gradientTransform="translate(566 384) rotate(-8) scale(126 112)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B83CFF"/>
+      <stop offset="1" stop-color="#B83CFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="internalBlur" x="-45%" y="-45%" width="190%" height="190%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="28"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" fill="#050505"/>
+
+  <!-- Three calm white surfaces. -->
+  <path d="M350 280H500V390A110 110 0 0 1 390 500H280V350A70 70 0 0 1 350 280Z" fill="#F7F7F2"/>
+  <path d="M280 524H390A110 110 0 0 1 500 634V744H350A70 70 0 0 1 280 674V524Z" fill="#F7F7F2"/>
+  <path d="M524 524H634A110 110 0 0 1 744 634V674A70 70 0 0 1 674 744H524V524Z" fill="#F7F7F2"/>
+
+  <!-- The fourth surface itself carries the soft multicolour light. Nothing spills onto the background. -->
+  <g clip-path="url(#colourModule)">
+    <rect x="520" y="240" width="264" height="264" fill="url(#colourBase)"/>
+    <g filter="url(#internalBlur)" opacity="0.98">
+      <ellipse cx="704" cy="294" rx="118" ry="126" fill="url(#cyan)"/>
+      <ellipse cx="750" cy="382" rx="108" ry="94" fill="url(#yellow)"/>
+      <ellipse cx="650" cy="476" rx="118" ry="124" fill="url(#coral)"/>
+      <ellipse cx="566" cy="384" rx="126" ry="112" fill="url(#violet)"/>
+    </g>
+  </g>
+</svg>

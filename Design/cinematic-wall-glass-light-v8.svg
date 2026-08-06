@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <clipPath id="colourModule">
+      <path d="M542 262H692A70 70 0 0 1 762 332V482H652A110 110 0 0 1 542 372V262Z"/>
+    </clipPath>
+
+    <linearGradient id="darkGlass" x1="548" y1="270" x2="754" y2="478" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1B0A33"/>
+      <stop offset="0.34" stop-color="#090713"/>
+      <stop offset="0.67" stop-color="#130724"/>
+      <stop offset="1" stop-color="#08050E"/>
+    </linearGradient>
+    <linearGradient id="edgeLight" x1="548" y1="372" x2="680" y2="482" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF58A"/>
+      <stop offset="0.18" stop-color="#FFB13B"/>
+      <stop offset="0.42" stop-color="#FF5D3D"/>
+      <stop offset="0.66" stop-color="#FF2E91"/>
+      <stop offset="0.84" stop-color="#A13CFF"/>
+      <stop offset="1" stop-color="#4357FF"/>
+    </linearGradient>
+    <radialGradient id="bluePetal" cx="0" cy="0" r="1" gradientTransform="translate(700 304) rotate(135) scale(152 92)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#706BFF" stop-opacity="0.94"/>
+      <stop offset="0.42" stop-color="#4930D8" stop-opacity="0.70"/>
+      <stop offset="1" stop-color="#150624" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="pinkPetal" cx="0" cy="0" r="1" gradientTransform="translate(622 392) rotate(28) scale(150 104)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F33AA9" stop-opacity="0.92"/>
+      <stop offset="0.48" stop-color="#8E1BC6" stop-opacity="0.62"/>
+      <stop offset="1" stop-color="#8E1BC6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="warmPetal" cx="0" cy="0" r="1" gradientTransform="translate(666 464) rotate(-26) scale(112 76)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE878" stop-opacity="0.98"/>
+      <stop offset="0.26" stop-color="#FF8D3D" stop-opacity="0.90"/>
+      <stop offset="0.60" stop-color="#FF3A65" stop-opacity="0.60"/>
+      <stop offset="1" stop-color="#FF3A65" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="coolVeil" cx="0" cy="0" r="1" gradientTransform="translate(738 390) rotate(145) scale(118 150)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#83E5FF" stop-opacity="0.52"/>
+      <stop offset="0.36" stop-color="#6C62FF" stop-opacity="0.40"/>
+      <stop offset="1" stop-color="#28103E" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="softBlur" x="-55%" y="-55%" width="210%" height="210%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="25"/>
+    </filter>
+    <filter id="edgeBloom" x="-90%" y="-90%" width="280%" height="280%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="17"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" fill="#050505"/>
+
+  <!-- Three matte-white modules stay unchanged. -->
+  <path d="M350 280H500V390A110 110 0 0 1 390 500H280V350A70 70 0 0 1 350 280Z" fill="#F7F7F2"/>
+  <path d="M280 524H390A110 110 0 0 1 500 634V744H350A70 70 0 0 1 280 674V524Z" fill="#F7F7F2"/>
+  <path d="M524 524H634A110 110 0 0 1 744 634V674A70 70 0 0 1 674 744H524V524Z" fill="#F7F7F2"/>
+
+  <!-- Dark translucent surface with concentrated internal light, clipped to the fourth module. -->
+  <g clip-path="url(#colourModule)">
+    <rect x="520" y="240" width="270" height="270" fill="url(#darkGlass)"/>
+
+    <g filter="url(#softBlur)">
+      <ellipse cx="700" cy="304" rx="152" ry="92" fill="url(#bluePetal)"/>
+      <ellipse cx="622" cy="392" rx="150" ry="104" fill="url(#pinkPetal)"/>
+      <ellipse cx="666" cy="464" rx="112" ry="76" fill="url(#warmPetal)"/>
+      <ellipse cx="738" cy="390" rx="118" ry="150" fill="url(#coolVeil)"/>
+    </g>
+
+    <!-- The luminous inner rim gives the blurred colour a precise, glass-like focus. -->
+    <path d="M552 366A104 104 0 0 0 658 472" fill="none" stroke="url(#edgeLight)" stroke-width="50" stroke-linecap="round" filter="url(#edgeBloom)" opacity="0.96"/>
+    <path d="M552 366A104 104 0 0 0 658 472" fill="none" stroke="url(#edgeLight)" stroke-width="12" stroke-linecap="round" opacity="0.94"/>
+
+    <ellipse cx="650" cy="350" rx="170" ry="82" transform="rotate(28 650 350)" fill="url(#coolVeil)" opacity="0.48"/>
+  </g>
+
+  <!-- Restrained glass edge, still contained within the symbol. -->
+  <path d="M542 262H692A70 70 0 0 1 762 332V482H652A110 110 0 0 1 542 372V262Z"
+        fill="none" stroke="#FFFFFF" stroke-opacity="0.20" stroke-width="2"/>
+</svg>
