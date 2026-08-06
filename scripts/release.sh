@@ -69,12 +69,20 @@ derived_data_dir="$release_work_dir/DerivedData"
 products_dir="$derived_data_dir/Build/Products/Release"
 artifacts_dir="$release_work_dir/artifacts"
 staging_dir="$release_work_dir/dmg"
+mount_dir="$release_work_dir/dmg-mount"
+rw_dmg_path="$release_work_dir/Foldwalls-$release_version-rw.dmg"
+background_path="$workspace_dir/Design/foldwalls-dmg-background-v1.png"
 zip_name="Foldwalls-$release_version-macOS.zip"
 dmg_name="Foldwalls-$release_version-macOS.dmg"
 zip_path="$artifacts_dir/$zip_name"
 dmg_path="$artifacts_dir/$dmg_name"
 
 mkdir -p "$tools_dir" "$artifacts_dir"
+
+if [[ ! -f "$background_path" ]]; then
+  echo "DMG background does not exist: $background_path" >&2
+  exit 1
+fi
 
 if [[ ! -x "$tools_dir/bin/sign_update" ]]; then
   archive_path="$tools_dir/Sparkle.tar.xz"
@@ -147,15 +155,89 @@ echo "Clean cold-launch check passed."
 ditto -c -k --sequesterRsrc --keepParent "$app_path" "$zip_path"
 
 rm -rf "$staging_dir"
-mkdir -p "$staging_dir"
+mkdir -p "$staging_dir/.background"
 ditto "$app_path" "$staging_dir/Foldwalls.app"
 ln -s /Applications "$staging_dir/Applications"
+ditto "$background_path" "$staging_dir/.background/background.png"
+
+volume_name="Foldwalls Installer $release_version"
+rm -f "$rw_dmg_path" "$dmg_path"
+rm -rf "$mount_dir"
+mkdir -p "$mount_dir"
 hdiutil create \
-  -volname "Foldwalls $release_version" \
+  -volname "$volume_name" \
   -srcfolder "$staging_dir" \
   -ov \
+  -format UDRW \
+  -fs HFS+ \
+  "$rw_dmg_path" >/dev/null
+
+dmg_is_mounted=false
+cleanup_mounted_dmg() {
+  if [[ "$dmg_is_mounted" == true ]]; then
+    hdiutil detach "$mount_dir" -force >/dev/null 2>&1 || true
+  fi
+}
+trap cleanup_mounted_dmg EXIT
+
+hdiutil attach \
+  "$rw_dmg_path" \
+  -readwrite \
+  -noverify \
+  -noautoopen \
+  -mountpoint "$mount_dir" >/dev/null
+dmg_is_mounted=true
+
+osascript <<APPLESCRIPT
+set dmgFolder to POSIX file "$mount_dir" as alias
+set backgroundPicture to POSIX file "$mount_dir/.background/background.png" as alias
+tell application "Finder"
+  open dmgFolder
+  set dmgWindow to container window of dmgFolder
+  set current view of dmgWindow to icon view
+  set toolbar visible of dmgWindow to false
+  set statusbar visible of dmgWindow to false
+  set pathbar visible of dmgWindow to false
+  set bounds of dmgWindow to {160, 100, 920, 630}
+
+  set iconOptions to icon view options of dmgWindow
+  set arrangement of iconOptions to not arranged
+  set icon size of iconOptions to 112
+  set text size of iconOptions to 13
+  set label position of iconOptions to bottom
+  set background picture of iconOptions to backgroundPicture
+
+  set position of item "Foldwalls.app" of dmgFolder to {205, 245}
+  set position of item "Applications" of dmgFolder to {555, 245}
+
+  update dmgFolder without registering applications
+  delay 3
+  close dmgWindow
+  delay 2
+end tell
+APPLESCRIPT
+
+sync
+for _ in 1 2 3 4 5 6 7 8 9 10; do
+  [[ -f "$mount_dir/.DS_Store" ]] && break
+  sleep 1
+done
+if [[ ! -f "$mount_dir/.DS_Store" ]]; then
+  echo "Finder did not persist the DMG layout." >&2
+  exit 1
+fi
+
+hdiutil detach "$mount_dir" >/dev/null
+dmg_is_mounted=false
+trap - EXIT
+
+hdiutil convert \
+  "$rw_dmg_path" \
+  -ov \
   -format UDZO \
-  "$dmg_path" >/dev/null
+  -imagekey zlib-level=9 \
+  -o "$dmg_path" >/dev/null
+rm -f "$rw_dmg_path"
 
 signature_output=$("$tools_dir/bin/sign_update" "$zip_path")
 ed_signature=$(printf '%s\n' "$signature_output" | sed -n 's/.*sparkle:edSignature="\([^"]*\)".*/\1/p')
