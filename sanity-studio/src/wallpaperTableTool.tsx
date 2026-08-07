@@ -67,6 +67,8 @@ interface WallpaperRow {
   mediaFileName?: string
   previewVideoAssetId?: string
   fileSize?: number
+  r2MigrationStatus?: 'pending' | 'verified' | 'failed'
+  r2DeliveryEnabled?: boolean
 }
 
 interface WallpaperForm {
@@ -156,7 +158,9 @@ const query = `*[_type == "wallpaper"] | order(sortOrder desc, _createdAt desc) 
   "mediaAssetId": select(kind == "video" => video.asset->_id, image.asset->_id),
   "mediaFileName": select(kind == "video" => video.asset->originalFilename, image.asset->originalFilename),
   "previewVideoAssetId": previewVideo.asset->_id,
-  "fileSize": select(kind == "video" => video.asset->size, image.asset->size)
+  "fileSize": select(kind == "video" => video.asset->size, image.asset->size),
+  r2MigrationStatus,
+  r2DeliveryEnabled
 }`
 
 const categoryQuery = `*[_type == "category" && _id in path("*") && enabled != false] | order(order asc, titleZh asc) {
@@ -778,7 +782,7 @@ function WallpaperTable() {
           <Card radius={3} border style={{overflow: 'hidden', minWidth: 1280}}>
             <table style={{borderCollapse: 'collapse', width: '100%'}}>
               <thead><tr style={{background: 'var(--card-muted-bg-color)'}}>
-                {['封面', '名称', '类型', '分类', '分辨率', '大小', '推荐', '精选', '热门', '状态', '排序', '更新时间', '操作'].map((label) => (
+                {['封面', '名称', '类型', '分类', '分辨率', '大小', 'R2', '推荐', '精选', '热门', '状态', '排序', '更新时间', '操作'].map((label) => (
                   <th key={label} style={{padding: '12px 10px', textAlign: 'left', borderBottom: '1px solid var(--card-border-color)', fontSize: 12}}>{label}</th>
                 ))}
               </tr></thead>
@@ -790,6 +794,7 @@ function WallpaperTable() {
                   <td style={cellStyle}><Text size={1}>{row.categoryDetails?.map((item) => `${item.zh} / ${item.en}`).join('、') || '—'}</Text></td>
                   <td style={cellStyle}><Text size={1}>{row.width && row.height ? `${row.width}×${row.height}` : '—'}</Text></td>
                   <td style={cellStyle}><Text size={1}>{formatBytes(row.fileSize)}</Text></td>
+                  <td style={cellStyle}><Badge tone={row.r2DeliveryEnabled ? 'positive' : row.r2MigrationStatus === 'verified' ? 'primary' : 'default'}>{row.r2DeliveryEnabled ? '已启用' : row.r2MigrationStatus === 'verified' ? '已就绪' : '未迁移'}</Badge></td>
                   <td style={cellStyle}><Checkbox checked={row.featured ?? false} onChange={(event) => void toggleGroup(row, 'featured', event.currentTarget.checked)} /></td>
                   <td style={cellStyle}><Checkbox checked={row.curated ?? false} onChange={(event) => void toggleGroup(row, 'curated', event.currentTarget.checked)} /></td>
                   <td style={cellStyle}><Checkbox checked={row.popular ?? false} onChange={(event) => void toggleGroup(row, 'popular', event.currentTarget.checked)} /></td>

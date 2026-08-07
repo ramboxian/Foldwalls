@@ -71,8 +71,11 @@ struct WallpaperItem: Identifiable, Codable, Hashable, Sendable {
     /// older local-only builds fully decodable.
     var remoteID: String? = nil
     var remoteMediaURL: URL? = nil
+    var remoteMediaFallbackURL: URL? = nil
     var remoteThumbnailURL: URL? = nil
+    var remoteThumbnailFallbackURL: URL? = nil
     var remotePreviewVideoURL: URL? = nil
+    var remotePreviewVideoFallbackURL: URL? = nil
     var remotePreviewVideoSize: Int64? = nil
     var remoteUpdatedAt: String? = nil
     var remoteFileName: String? = nil
@@ -85,6 +88,7 @@ struct WallpaperItem: Identifiable, Codable, Hashable, Sendable {
     var isPopular: Bool? = nil
     var sortOrder: Int? = nil
     var remoteCreatedAt: String? = nil
+    var usesR2Delivery: Bool? = nil
 
     var localURL: URL {
         URL(fileURLWithPath: localPath)

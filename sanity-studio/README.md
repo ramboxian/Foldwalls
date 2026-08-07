@@ -45,3 +45,19 @@ pnpm deploy
 ```
 
 部署过程中选择一个以英文字母开头的唯一地址，例如 `foldwalls-admin`。
+
+## R2 媒体迁移与安全切换
+
+Sanity 继续负责元数据和可视化后台；原图、封面与轻量视频预览会复制到 Cloudflare R2。迁移脚本只在本机运行，R2 密钥不会进入 Studio 网页或 macOS 客户端。
+
+1. 将 `.env.example` 复制为 `.env` 并填写 R2 信息。
+2. 先运行 `pnpm r2:migrate -- --dry-run` 检查对象 Key 和公开地址。
+3. 运行 `pnpm r2:migrate` 上传并按文件大小逐个校验。这个步骤只写入 R2 地址，`r2DeliveryEnabled` 始终保持关闭，因此线上客户端不受影响。
+4. 使用 `FOLDWALLS_PREFER_R2=1` 启动候选版，验证目录、封面、预览和应用原片；R2 失败会自动回退 Sanity。
+5. 新版发布并确认 Sparkle 可更新后，才运行：
+
+```sh
+R2_CUTOVER_CONFIRM=FOLDWALLS_R2_VERIFIED pnpm r2:cutover -- --enable
+```
+
+需要紧急回滚时运行 `pnpm r2:cutover -- --disable`。旧版客户端始终读取原有 Sanity 资源；不要删除 Sanity Asset，至少保留一个完整版本周期。

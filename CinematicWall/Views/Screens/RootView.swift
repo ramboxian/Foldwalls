@@ -1450,7 +1450,7 @@ struct RootView: View {
             HeroMediaView(
                 item: item,
                 isPlaying: heroIsVisible && destination == .home && selectedItem == nil,
-                videoAsset: .original
+                videoAsset: .compressedPreview
             )
                 .frame(width: width, height: heroHeight)
                 .clipped()

@@ -9,8 +9,11 @@ struct CatalogEntry: Codable, Sendable {
     let subtitle: String
     let subtitleEn: String?
     let mediaURL: URL
+    let mediaFallbackURL: URL?
     let thumbnailURL: URL
+    let thumbnailFallbackURL: URL?
     let previewVideoURL: URL?
+    let previewVideoFallbackURL: URL?
     let previewVideoSize: Int64?
     let mediaFileName: String
     let kind: WallpaperKind
@@ -34,6 +37,7 @@ struct CatalogEntry: Codable, Sendable {
     let paletteStart: String
     let paletteMiddle: String
     let paletteEnd: String
+    let usesR2Delivery: Bool
 }
 
 protocol WallpaperCatalogProvider: Sendable {
@@ -69,9 +73,13 @@ struct SanityCatalogProvider: WallpaperCatalogProvider {
           "subtitle": coalesce(subtitle, ""),
           subtitleEn,
           kind,
-          "mediaURL": select(kind == "video" => video.asset->url, image.asset->url),
-          "thumbnailURL": coalesce(thumbnail.asset->url, image.asset->url),
-          "previewVideoURL": previewVideo.asset->url,
+          "sanityMediaURL": select(kind == "video" => video.asset->url, image.asset->url),
+          "sanityThumbnailURL": coalesce(thumbnail.asset->url, image.asset->url),
+          "sanityPreviewVideoURL": previewVideo.asset->url,
+          r2MediaUrl,
+          r2ThumbnailUrl,
+          r2PreviewVideoUrl,
+          "r2DeliveryEnabled": coalesce(r2DeliveryEnabled, false),
           "previewVideoSize": previewVideo.asset->size,
           "mediaFileName": coalesce(select(kind == "video" => video.asset->originalFilename, image.asset->originalFilename), "wallpaper"),
           "width": coalesce(width, select(kind == "video" => video.asset->metadata.dimensions.width, image.asset->metadata.dimensions.width), 0),
@@ -127,10 +135,94 @@ struct SanityCatalogProvider: WallpaperCatalogProvider {
         }
 
         let envelope = try JSONDecoder().decode(QueryEnvelope.self, from: data)
-        return envelope.result.filter { !$0.mediaURL.absoluteString.isEmpty && !$0.thumbnailURL.absoluteString.isEmpty }
+        let forceR2 = ProcessInfo.processInfo.environment["FOLDWALLS_PREFER_R2"] == "1"
+        return envelope.result.compactMap { entry in
+            let useR2 = (entry.r2DeliveryEnabled || forceR2)
+                && entry.r2MediaUrl != nil
+                && entry.r2ThumbnailUrl != nil
+            guard let mediaURL = useR2 ? entry.r2MediaUrl : entry.sanityMediaURL,
+                  let thumbnailURL = useR2 ? entry.r2ThumbnailUrl : entry.sanityThumbnailURL else {
+                return nil
+            }
+            return CatalogEntry(
+                id: entry.id,
+                createdAt: entry.createdAt,
+                updatedAt: entry.updatedAt,
+                title: entry.title,
+                titleEn: entry.titleEn,
+                subtitle: entry.subtitle,
+                subtitleEn: entry.subtitleEn,
+                mediaURL: mediaURL,
+                mediaFallbackURL: useR2 ? entry.sanityMediaURL : entry.r2MediaUrl,
+                thumbnailURL: thumbnailURL,
+                thumbnailFallbackURL: useR2 ? entry.sanityThumbnailURL : entry.r2ThumbnailUrl,
+                previewVideoURL: useR2 ? (entry.r2PreviewVideoUrl ?? entry.sanityPreviewVideoURL) : entry.sanityPreviewVideoURL,
+                previewVideoFallbackURL: useR2 ? entry.sanityPreviewVideoURL : entry.r2PreviewVideoUrl,
+                previewVideoSize: entry.previewVideoSize,
+                mediaFileName: entry.mediaFileName,
+                kind: entry.kind,
+                width: entry.width,
+                height: entry.height,
+                duration: entry.duration,
+                fileSize: entry.fileSize,
+                author: entry.author,
+                licenseName: entry.licenseName,
+                sourceURL: entry.sourceURL,
+                categories: entry.categories,
+                categoryDetails: entry.categoryDetails,
+                tags: entry.tags,
+                localizedTags: entry.localizedTags,
+                featured: entry.featured,
+                curated: entry.curated,
+                popular: entry.popular,
+                sortOrder: entry.sortOrder,
+                paletteStart: entry.paletteStart,
+                paletteMiddle: entry.paletteMiddle,
+                paletteEnd: entry.paletteEnd,
+                usesR2Delivery: useR2
+            )
+        }
     }
 
     private struct QueryEnvelope: Decodable {
-        let result: [CatalogEntry]
+        let result: [RawCatalogEntry]
+    }
+
+    private struct RawCatalogEntry: Decodable {
+        let id: String
+        let createdAt: String
+        let updatedAt: String
+        let title: String
+        let titleEn: String?
+        let subtitle: String
+        let subtitleEn: String?
+        let sanityMediaURL: URL?
+        let sanityThumbnailURL: URL?
+        let sanityPreviewVideoURL: URL?
+        let r2MediaUrl: URL?
+        let r2ThumbnailUrl: URL?
+        let r2PreviewVideoUrl: URL?
+        let r2DeliveryEnabled: Bool
+        let previewVideoSize: Int64?
+        let mediaFileName: String
+        let kind: WallpaperKind
+        let width: Int
+        let height: Int
+        let duration: TimeInterval?
+        let fileSize: Int64
+        let author: String
+        let licenseName: String
+        let sourceURL: URL?
+        let categories: [String]
+        let categoryDetails: [LocalizedTaxonomyTerm?]
+        let tags: [String]
+        let localizedTags: [LocalizedTaxonomyTerm?]
+        let featured: Bool
+        let curated: Bool
+        let popular: Bool
+        let sortOrder: Int
+        let paletteStart: String
+        let paletteMiddle: String
+        let paletteEnd: String
     }
 }

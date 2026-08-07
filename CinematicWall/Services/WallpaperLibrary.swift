@@ -351,12 +351,11 @@ final class WallpaperLibrary: ObservableObject {
 
         let task = Task<URL?, Never> {
             do {
-                var request = URLRequest(url: remoteURL)
-                request.cachePolicy = .useProtocolCachePolicy
-                request.timeoutInterval = 30
-                let (temporaryURL, response) = try await URLSession.shared.download(for: request)
-                guard let http = response as? HTTPURLResponse,
-                      (200..<300).contains(http.statusCode) else { return nil }
+                let (temporaryURL, _) = try await self.downloadFirstAvailable(
+                    urls: [remoteURL, item.remoteThumbnailFallbackURL].compactMap { $0 },
+                    timeout: 30,
+                    cachePolicy: .useProtocolCachePolicy
+                )
                 try? self.fileManager.removeItem(at: destination)
                 try self.fileManager.moveItem(at: temporaryURL, to: destination)
                 return destination
@@ -392,12 +391,11 @@ final class WallpaperLibrary: ObservableObject {
         previewLoadingItemIDs.insert(item.id)
         let task = Task<URL?, Never> {
             do {
-                var request = URLRequest(url: remoteURL)
-                request.cachePolicy = .reloadRevalidatingCacheData
-                request.timeoutInterval = 180
-                let (temporaryURL, response) = try await URLSession.shared.download(for: request)
-                guard let http = response as? HTTPURLResponse,
-                      (200..<300).contains(http.statusCode) else { return nil }
+                let (temporaryURL, _) = try await self.downloadFirstAvailable(
+                    urls: [remoteURL, item.remotePreviewVideoFallbackURL].compactMap { $0 },
+                    timeout: 180,
+                    cachePolicy: .reloadRevalidatingCacheData
+                )
                 let expectedSize = expectedVideoPreviewSize(for: item, remoteURL: remoteURL)
                 if expectedSize > 0,
                    let downloadedSize = try? temporaryURL.resourceValues(forKeys: [.fileSizeKey]).fileSize,
@@ -437,12 +435,11 @@ final class WallpaperLibrary: ObservableObject {
 
         let task = Task<URL?, Never> {
             do {
-                var request = URLRequest(url: remoteURL)
-                request.cachePolicy = .reloadRevalidatingCacheData
-                request.timeoutInterval = 300
-                let (temporaryURL, response) = try await URLSession.shared.download(for: request)
-                guard let http = response as? HTTPURLResponse,
-                      (200..<300).contains(http.statusCode) else { return nil }
+                let (temporaryURL, _) = try await self.downloadFirstAvailable(
+                    urls: [remoteURL, item.remoteMediaFallbackURL].compactMap { $0 },
+                    timeout: 300,
+                    cachePolicy: .reloadRevalidatingCacheData
+                )
                 if item.fileSize > 0,
                    let downloadedSize = try? temporaryURL.resourceValues(forKeys: [.fileSizeKey]).fileSize,
                    downloadedSize != Int(item.fileSize) {
@@ -576,8 +573,11 @@ final class WallpaperLibrary: ObservableObject {
                 fileSystemID: existing?.fileSystemID,
                 remoteID: entry.id,
                 remoteMediaURL: entry.mediaURL,
+                remoteMediaFallbackURL: entry.mediaFallbackURL,
                 remoteThumbnailURL: entry.thumbnailURL,
+                remoteThumbnailFallbackURL: entry.thumbnailFallbackURL,
                 remotePreviewVideoURL: entry.previewVideoURL,
+                remotePreviewVideoFallbackURL: entry.previewVideoFallbackURL,
                 remotePreviewVideoSize: entry.previewVideoSize,
                 remoteUpdatedAt: entry.updatedAt,
                 remoteFileName: entry.mediaFileName,
@@ -589,7 +589,8 @@ final class WallpaperLibrary: ObservableObject {
                 isCurated: entry.curated,
                 isPopular: entry.popular,
                 sortOrder: entry.sortOrder,
-                remoteCreatedAt: entry.createdAt
+                remoteCreatedAt: entry.createdAt,
+                usesR2Delivery: entry.usesR2Delivery
             ))
         }
 
@@ -784,14 +785,11 @@ final class WallpaperLibrary: ObservableObject {
             return updateDownloadedItem(item, destination: destination)
         }
 
-        var request = URLRequest(url: remoteURL)
-        request.cachePolicy = .useProtocolCachePolicy
-        request.timeoutInterval = 300
-        let (temporaryURL, response) = try await URLSession.shared.download(for: request)
-        guard let http = response as? HTTPURLResponse,
-              (200..<300).contains(http.statusCode) else {
-            throw URLError(.badServerResponse)
-        }
+        let (temporaryURL, _) = try await downloadFirstAvailable(
+            urls: [remoteURL, item.remoteMediaFallbackURL].compactMap { $0 },
+            timeout: 300,
+            cachePolicy: .useProtocolCachePolicy
+        )
         if item.fileSize > 0,
            let downloadedSize = try? temporaryURL.resourceValues(forKeys: [.fileSizeKey]).fileSize,
            downloadedSize != Int(item.fileSize) {
@@ -801,6 +799,31 @@ final class WallpaperLibrary: ObservableObject {
         try? fileManager.removeItem(at: destination)
         try fileManager.moveItem(at: temporaryURL, to: destination)
         return updateDownloadedItem(item, destination: destination)
+    }
+
+    private func downloadFirstAvailable(
+        urls: [URL],
+        timeout: TimeInterval,
+        cachePolicy: NSURLRequest.CachePolicy
+    ) async throws -> (URL, HTTPURLResponse) {
+        var lastError: Error = URLError(.badURL)
+        for url in urls {
+            do {
+                var request = URLRequest(url: url)
+                request.cachePolicy = cachePolicy
+                request.timeoutInterval = timeout
+                let (temporaryURL, response) = try await URLSession.shared.download(for: request)
+                guard let http = response as? HTTPURLResponse,
+                      (200..<300).contains(http.statusCode) else {
+                    lastError = URLError(.badServerResponse)
+                    continue
+                }
+                return (temporaryURL, http)
+            } catch {
+                lastError = error
+            }
+        }
+        throw lastError
     }
 
     private func updateDownloadedItem(_ item: WallpaperItem, destination: URL) -> WallpaperItem {
@@ -1270,7 +1293,12 @@ final class WallpaperLibrary: ObservableObject {
             fileSystemID: snapshot.fileSystemID,
             remoteID: existing?.remoteID,
             remoteMediaURL: existing?.remoteMediaURL,
+            remoteMediaFallbackURL: existing?.remoteMediaFallbackURL,
             remoteThumbnailURL: existing?.remoteThumbnailURL,
+            remoteThumbnailFallbackURL: existing?.remoteThumbnailFallbackURL,
+            remotePreviewVideoURL: existing?.remotePreviewVideoURL,
+            remotePreviewVideoFallbackURL: existing?.remotePreviewVideoFallbackURL,
+            remotePreviewVideoSize: existing?.remotePreviewVideoSize,
             remoteUpdatedAt: existing?.remoteUpdatedAt,
             remoteFileName: existing?.remoteFileName,
             titleEn: existing?.titleEn,
@@ -1280,7 +1308,8 @@ final class WallpaperLibrary: ObservableObject {
             isCurated: existing?.isCurated,
             isPopular: existing?.isPopular,
             sortOrder: existing?.sortOrder,
-            remoteCreatedAt: existing?.remoteCreatedAt
+            remoteCreatedAt: existing?.remoteCreatedAt,
+            usesR2Delivery: existing?.usesR2Delivery
         )
     }
 

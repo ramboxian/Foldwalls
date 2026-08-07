@@ -141,6 +141,7 @@ enum VideoPlaybackAsset: String {
 
 struct HeroMediaView: View {
     @EnvironmentObject private var library: WallpaperLibrary
+    @Environment(\.scenePhase) private var scenePhase
     let item: WallpaperItem
     var isPlaying = true
     var videoAsset: VideoPlaybackAsset = .localOriginal
@@ -153,7 +154,7 @@ struct HeroMediaView: View {
             ArtworkView(item: item, cornerRadius: 0)
 
             if item.kind == .video, let playableURL {
-                LoopingVideoPreview(url: playableURL, isPlaying: isPlaying) {
+                LoopingVideoPreview(url: playableURL, isPlaying: isPlaying && scenePhase == .active) {
                     withAnimation(.easeOut(duration: 0.18)) {
                         videoIsReady = true
                     }
@@ -164,8 +165,8 @@ struct HeroMediaView: View {
         .onChange(of: playableURL) { _, _ in
             videoIsReady = false
         }
-        .task(id: "\(item.id.uuidString)-\(item.remotePreviewVideoURL?.absoluteString ?? item.remoteMediaURL?.absoluteString ?? item.localPath)-\(videoAsset.rawValue)-\(isPlaying)") {
-            guard item.kind == .video, isPlaying else { return }
+        .task(id: "\(item.id.uuidString)-\(item.remotePreviewVideoURL?.absoluteString ?? item.remoteMediaURL?.absoluteString ?? item.localPath)-\(videoAsset.rawValue)-\(isPlaying)-\(scenePhase)") {
+            guard item.kind == .video, isPlaying, scenePhase == .active else { return }
             let resolvedURL: URL?
             switch videoAsset {
             case .original:
