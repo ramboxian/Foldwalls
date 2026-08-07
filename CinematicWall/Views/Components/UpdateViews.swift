@@ -3,27 +3,28 @@ import SwiftUI
 struct UpdateProgressGlyph: View {
     @ObservedObject var manager: UpdateManager
     var size: CGFloat = 22
+    var tint: Color = .white
 
     var body: some View {
         ZStack {
             if manager.isBusy {
                 if let progress = manager.progress {
                     Circle()
-                        .stroke(Color.white.opacity(0.22), lineWidth: 2.4)
+                        .stroke(tint.opacity(0.22), lineWidth: 2.4)
                     Circle()
                         .trim(from: 0, to: max(progress, 0.025))
-                        .stroke(.white, style: StrokeStyle(lineWidth: 2.4, lineCap: .round))
+                        .stroke(tint, style: StrokeStyle(lineWidth: 2.4, lineCap: .round))
                         .rotationEffect(.degrees(-90))
                         .animation(.easeOut(duration: 0.18), value: progress)
                 } else {
                     ProgressView()
                         .controlSize(.small)
-                        .tint(.white)
+                        .tint(tint)
                 }
             } else {
                 Image(systemName: "arrow.up")
                     .font(.system(size: size * 0.56, weight: .black))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(tint)
             }
         }
         .frame(width: size, height: size)
@@ -86,7 +87,7 @@ struct UpdateReleaseNotesView: View {
                 .cinematicGlassPanel(cornerRadius: 18, interactive: false, tint: .black.opacity(0.06))
 
                 HStack(spacing: 12) {
-                    Text(manager.statusText)
+                    Text(localizedStatus)
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(manager.phase == .failed ? Color.orange : CinematicTheme.secondaryText)
                         .lineLimit(2)
@@ -98,11 +99,12 @@ struct UpdateReleaseNotesView: View {
                             manager.installAvailableUpdate()
                         } label: {
                             HStack(spacing: 9) {
-                                UpdateProgressGlyph(manager: manager, size: 18)
+                                UpdateProgressGlyph(manager: manager, size: 18, tint: .black)
                                 Text(manager.isBusy
                                     ? language.text("Updating…", "正在更新…")
                                     : language.text("Update and Restart", "更新并重启"))
                             }
+                            .frame(minWidth: 148)
                         }
                         .buttonStyle(CinematicButtonStyle(prominent: true))
                         .disabled(manager.isBusy)
@@ -125,5 +127,35 @@ struct UpdateReleaseNotesView: View {
         ]
         if let size = manager.formattedReleaseSize { parts.append(size) }
         return parts.joined(separator: "  ·  ")
+    }
+
+    private var localizedStatus: String {
+        switch manager.phase {
+        case .idle:
+            return ""
+        case .checking:
+            return language.text("Checking for updates…", "正在检查更新…")
+        case .available:
+            return language.text(
+                "Version \(manager.release?.version ?? "") is ready",
+                "版本 \(manager.release?.version ?? "") 已可更新"
+            )
+        case .downloading:
+            if let progress = manager.progress {
+                return language.text(
+                    "Downloading… \(Int(progress * 100))%",
+                    "正在下载… \(Int(progress * 100))%"
+                )
+            }
+            return language.text("Downloading update…", "正在下载更新…")
+        case .extracting:
+            return language.text("Preparing update…", "正在准备更新…")
+        case .installing:
+            return language.text("Installing and restarting…", "正在安装并重启…")
+        case .upToDate:
+            return language.text("You’re using the latest version", "当前已是最新版本")
+        case .failed:
+            return manager.lastError ?? language.text("Update failed", "更新失败")
+        }
     }
 }

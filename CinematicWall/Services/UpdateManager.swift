@@ -137,7 +137,10 @@ final class UpdateManager: NSObject, ObservableObject, SPUUserDriver, SPUUpdater
     }
 
     private func remember(_ item: SUAppcastItem) {
-        let notes = Self.readableNotes(item.itemDescription)
+        let notes = Self.readableNotes(
+            item.itemDescription,
+            format: item.itemDescriptionFormat
+        )
         release = Release(
             version: item.displayVersionString,
             build: item.versionString,
@@ -161,21 +164,38 @@ final class UpdateManager: NSObject, ObservableObject, SPUUserDriver, SPUUpdater
         }
     }
 
-    private static func readableNotes(_ value: String?) -> String {
+    private static func readableNotes(_ value: String?, format: String? = nil) -> String {
         guard let value, !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return "This update includes performance improvements and bug fixes."
         }
 
-        if let data = value.data(using: .utf8),
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedFormat = format?.lowercased()
+        if normalizedFormat == "plain-text" || normalizedFormat == "markdown" {
+            return trimmed
+        }
+
+        let containsHTML = trimmed.range(
+            of: #"<([A-Za-z][^>]*)>"#,
+            options: .regularExpression
+        ) != nil
+        guard normalizedFormat == "html" || containsHTML else {
+            return trimmed
+        }
+
+        if let data = trimmed.data(using: .utf8),
            let attributed = try? NSAttributedString(
                 data: data,
-                options: [.documentType: NSAttributedString.DocumentType.html],
+                options: [
+                    .documentType: NSAttributedString.DocumentType.html,
+                    .characterEncoding: String.Encoding.utf8.rawValue,
+                ],
                 documentAttributes: nil
            ) {
             let text = attributed.string.trimmingCharacters(in: .whitespacesAndNewlines)
             if !text.isEmpty { return text }
         }
-        return value.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed
     }
 
     // MARK: - SPUUserDriver
