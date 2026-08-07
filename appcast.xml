@@ -6,18 +6,18 @@
     <description>Foldwalls stable release feed</description>
     <language>zh-cn</language>
     <item>
-      <title>Foldwalls 0.4.1</title>
-      <pubDate>Fri, 07 Aug 2026 16:11:04 +0800</pubDate>
-      <sparkle:version>5</sparkle:version>
-      <sparkle:shortVersionString>0.4.1</sparkle:shortVersionString>
+      <title>Foldwalls 0.4.2</title>
+      <pubDate>Fri, 07 Aug 2026 16:37:28 +0800</pubDate>
+      <sparkle:version>6</sparkle:version>
+      <sparkle:shortVersionString>0.4.2</sparkle:shortVersionString>
       <description sparkle:descriptionFormat="plain-text"><![CDATA[
-Foldwalls 0.4.1
+Foldwalls 0.4.2
 
-- 修复首页 Hero 与卡片预览必须等待完整视频下载后才开始播放的问题。
-- Hero 现在立即流式播放原片，同时在后台写入持久缓存；再次访问直接读取本地文件。
-- 视频卡片悬停后约 180ms 即开始播放轻量预览，并继续保留本地缓存与 Sanity 回退。
+- 修复首页 Hero、详情页和卡片悬停视频被错误识别为后台状态、只显示静态封面的问题。
+- 页面视频现在跟随 macOS 应用的真实前后台状态播放；回到前台自动恢复，进入后台自动暂停。
+- 保持 Hero 原片播放、8 秒轮播与卡片轻量预览缓存策略不变。
       ]]></description>
-      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v0.4.1/Foldwalls-0.4.1-macOS.zip" length="9388373" type="application/octet-stream" sparkle:edSignature="0huzaRQu0OyBfqVxl0lM/JLy4qmklt2J4FIO8PBJrY63FSwYbg3n0wv6kC3B2mLPmP8mSln+DQHt1ECWfGMsCg==" />
+      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v0.4.2/Foldwalls-0.4.2-macOS.zip" length="9391508" type="application/octet-stream" sparkle:edSignature="BRQqKmVOH+2kxlRkwOPFCfhyl0sNmW2CnClzhW6Uu6T9qPqGF7k+ANx4VqsALwW0/66Ds/gqcM7kcRAvG6lnBQ==" />
     </item>
   </channel>
 </rss>
