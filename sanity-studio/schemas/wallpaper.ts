@@ -1,22 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
-const categoryOptions = [
-  {title: '自然', value: '自然'},
-  {title: '城市', value: '城市'},
-  {title: '太空', value: '太空'},
-  {title: '抽象', value: '抽象'},
-  {title: '夜晚', value: '夜晚'},
-  {title: '深色', value: '深色'},
-  {title: '动漫', value: '动漫'},
-  {title: '森林', value: '森林'},
-  {title: '海洋', value: '海洋'},
-  {title: '暖色', value: '暖色'},
-  {title: '静谧', value: '静谧'},
-  {title: '极简', value: '极简'},
-  {title: '天空', value: '天空'},
-  {title: '蓝色', value: '蓝色'},
-]
-
 export const wallpaper = defineType({
   name: 'wallpaper',
   title: '壁纸',
@@ -34,7 +17,7 @@ export const wallpaper = defineType({
     curated: false,
     popular: false,
     sortOrder: Date.now(),
-    categories: [],
+    categoryRefs: [],
   }),
   fields: [
     defineField({
@@ -81,23 +64,37 @@ export const wallpaper = defineType({
       },
     }),
     defineField({
-      name: 'categories',
-      title: '分类',
+      name: 'categoryRefs',
+      title: '分类（中文 / English）',
+      description: '从分类字典选择；每一项都自带中文和英文名称，客户端切换语言时自动对应。',
       type: 'array',
       group: 'basic',
-      of: [defineArrayMember({type: 'string'})],
-      options: {list: categoryOptions, layout: 'grid'},
+      of: [defineArrayMember({type: 'reference', to: [{type: 'category'}]})],
       validation: (rule) => rule.unique(),
     }),
     defineField({
-      name: 'tags',
-      title: '标签',
-      description: '用于搜索，可自由输入。',
+      name: 'localizedTags',
+      title: '搜索标签（中文 / English）',
+      description: '每一行是一组严格对应的中英文标签，搜索时两种语言都会命中。',
+      type: 'array',
+      group: 'basic',
+      of: [defineArrayMember({type: 'localizedTag'})],
+    }),
+    defineField({
+      name: 'categories',
+      title: '旧版分类（兼容字段）',
       type: 'array',
       group: 'basic',
       of: [defineArrayMember({type: 'string'})],
-      options: {layout: 'tags'},
-      validation: (rule) => rule.unique(),
+      hidden: true,
+    }),
+    defineField({
+      name: 'tags',
+      title: '旧版标签（兼容字段）',
+      type: 'array',
+      group: 'basic',
+      of: [defineArrayMember({type: 'string'})],
+      hidden: true,
     }),
     defineField({
       name: 'thumbnail',

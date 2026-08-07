@@ -52,7 +52,7 @@ struct WallpaperCard: View {
                         Image(systemName: "play.fill")
                             .font(.system(size: 9, weight: .bold))
                     }
-                    Text((item.categories.first?.localizedCategory(for: language) ?? item.kind.label(for: language)).uppercased())
+                    Text((item.primaryCategoryLabel(for: language) ?? item.kind.label(for: language)).uppercased())
                         .font(.system(size: 10, weight: .bold))
                         .tracking(1.2)
                     if isActive {

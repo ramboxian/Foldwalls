@@ -19,7 +19,7 @@ struct WallpaperDetailView: View {
     private var similarItems: [WallpaperItem] {
         guard let item else { return [] }
         let sameMood = library.items.filter { candidate in
-            candidate.id != item.id && !Set(candidate.categories).isDisjoint(with: Set(item.categories))
+            candidate.id != item.id && !Set(candidate.categoryIDs).isDisjoint(with: Set(item.categoryIDs))
         }
         let rest = library.items.filter { candidate in
             candidate.id != item.id && !sameMood.contains(where: { $0.id == candidate.id })

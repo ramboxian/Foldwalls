@@ -22,7 +22,9 @@ struct CatalogEntry: Codable, Sendable {
     let licenseName: String
     let sourceURL: URL?
     let categories: [String]
+    let categoryDetails: [LocalizedTaxonomyTerm]
     let tags: [String]
+    let localizedTags: [LocalizedTaxonomyTerm]
     let featured: Bool
     let curated: Bool
     let popular: Bool
@@ -78,7 +80,18 @@ struct SanityCatalogProvider: WallpaperCatalogProvider {
           "licenseName": coalesce(licenseName, ""),
           "sourceURL": sourceUrl,
           "categories": coalesce(categories, []),
+          "categoryDetails": coalesce(categoryRefs[]->{
+            "id": coalesce(key, _id),
+            "zh": coalesce(titleZh, ""),
+            "en": coalesce(titleEn, titleZh, ""),
+            order
+          }, []),
           "tags": coalesce(tags, []),
+          "localizedTags": coalesce(localizedTags[]{
+            "id": coalesce(_key, zh, en),
+            "zh": coalesce(zh, ""),
+            "en": coalesce(en, zh, "")
+          }, []),
           "featured": coalesce(featured, false),
           "curated": coalesce(curated, false),
           "popular": coalesce(popular, false),

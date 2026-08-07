@@ -19,12 +19,19 @@ import {
 } from '@sanity/ui'
 import {definePlugin, useClient} from 'sanity'
 import * as XLSX from 'xlsx'
+import {categoryDocumentId, CATEGORY_DEFINITIONS, resolveCategory, type CategoryDefinition} from '../taxonomy'
 
 const API_VERSION = '2026-08-06'
 
 type WallpaperKind = 'image' | 'video'
 type WallpaperStatus = 'published' | 'hidden'
 type ImportRow = Record<string, unknown>
+
+interface LocalizedTag {
+  _key: string
+  zh: string
+  en: string
+}
 
 interface WallpaperRow {
   _id: string
@@ -36,6 +43,8 @@ interface WallpaperRow {
   kind?: WallpaperKind
   categories?: string[]
   tags?: string[]
+  categoryDetails?: CategoryDefinition[]
+  localizedTags?: LocalizedTag[]
   width?: number
   height?: number
   duration?: number
@@ -66,8 +75,8 @@ interface WallpaperForm {
   subtitle: string
   subtitleEn: string
   kind: WallpaperKind
-  categoriesText: string
-  tagsText: string
+  categoryIds: string[]
+  localizedTags: LocalizedTag[]
   width: string
   height: string
   duration: string
@@ -90,8 +99,8 @@ const createEmptyForm = (): WallpaperForm => ({
   subtitle: '',
   subtitleEn: '',
   kind: 'image',
-  categoriesText: '',
-  tagsText: '',
+  categoryIds: [],
+  localizedTags: [],
   width: '',
   height: '',
   duration: '',
@@ -109,7 +118,7 @@ const createEmptyForm = (): WallpaperForm => ({
 })
 
 const exportHeaders = [
-  '名称', '原文件名', '封面文件名', '类型', '分类', '标签', '首页推荐', '精选', '热门', '状态', '排序',
+  '名称', '原文件名', '封面文件名', '类型', '分类', '中文标签', '英文标签', '首页推荐', '精选', '热门', '状态', '排序',
   '宽度', '高度', '时长秒', '作者', '授权说明', '来源链接', '英文名称', '简介', '英文简介',
   '起点颜色', '中点颜色', '终点颜色', '导入ID',
 ]
@@ -124,6 +133,8 @@ const query = `*[_type == "wallpaper"] | order(sortOrder desc, _createdAt desc) 
   kind,
   categories,
   tags,
+  "categoryDetails": categoryRefs[]->{"id": key, "zh": titleZh, "en": titleEn, order},
+  localizedTags[]{_key, zh, en},
   width,
   height,
   duration,
@@ -148,6 +159,10 @@ const query = `*[_type == "wallpaper"] | order(sortOrder desc, _createdAt desc) 
   "fileSize": select(kind == "video" => video.asset->size, image.asset->size)
 }`
 
+const categoryQuery = `*[_type == "category" && enabled != false] | order(order asc, titleZh asc) {
+  "id": key, "zh": titleZh, "en": titleEn, order
+}`
+
 const directoryPickerProps = {
   webkitdirectory: '',
   directory: '',
@@ -156,6 +171,19 @@ const directoryPickerProps = {
 
 function splitValues(value: string): string[] {
   return [...new Set(value.split(/[,，\n]/).map((item) => item.trim()).filter(Boolean))]
+}
+
+function pairTags(chinese: string[], english: string[]): LocalizedTag[] {
+  const count = Math.max(chinese.length, english.length)
+  return Array.from({length: count}, (_, index) => ({
+    _key: `tag-${Date.now()}-${index}-${Math.random().toString(36).slice(2, 8)}`,
+    zh: chinese[index] ?? '',
+    en: english[index] ?? '',
+  })).filter((tag) => tag.zh || tag.en)
+}
+
+function resolvedCategoryIds(values: string[]): string[] {
+  return [...new Set(values.map((value) => resolveCategory(value)?.id).filter((id): id is string => Boolean(id)))]
 }
 
 function formatBytes(value?: number): string {
@@ -258,8 +286,10 @@ function formFromRow(row: WallpaperRow): WallpaperForm {
     subtitle: row.subtitle ?? '',
     subtitleEn: row.subtitleEn ?? '',
     kind: row.kind ?? 'image',
-    categoriesText: (row.categories ?? []).join('，'),
-    tagsText: (row.tags ?? []).join('，'),
+    categoryIds: row.categoryDetails?.map((item) => item.id) ?? resolvedCategoryIds(row.categories ?? []),
+    localizedTags: row.localizedTags?.length
+      ? row.localizedTags
+      : pairTags(row.tags ?? [], []),
     width: row.width?.toString() ?? '',
     height: row.height?.toString() ?? '',
     duration: row.duration?.toString() ?? '',
@@ -281,6 +311,7 @@ function WallpaperTable() {
   const client = useClient({apiVersion: API_VERSION})
   const toast = useToast()
   const [rows, setRows] = useState<WallpaperRow[]>([])
+  const [categoryOptions, setCategoryOptions] = useState<CategoryDefinition[]>(CATEGORY_DEFINITIONS)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [search, setSearch] = useState('')
@@ -302,8 +333,12 @@ function WallpaperTable() {
 
   const loadRows = useCallback(async () => {
     try {
-      const result = await client.fetch<WallpaperRow[]>(query)
+      const [result, fetchedCategories] = await Promise.all([
+        client.fetch<WallpaperRow[]>(query),
+        client.fetch<CategoryDefinition[]>(categoryQuery),
+      ])
       setRows(result)
+      if (fetchedCategories.length) setCategoryOptions(fetchedCategories)
     } catch (error) {
       toast.push({status: 'error', title: '壁纸列表加载失败', description: String(error)})
     } finally {
@@ -322,7 +357,12 @@ function WallpaperTable() {
         !keyword ||
         (row.title ?? '').toLocaleLowerCase().includes(keyword) ||
         row.titleEn?.toLocaleLowerCase().includes(keyword) ||
-        row.categories?.some((item) => item.toLocaleLowerCase().includes(keyword))
+        row.categoryDetails?.some((item) =>
+          item.zh.toLocaleLowerCase().includes(keyword) || item.en.toLocaleLowerCase().includes(keyword),
+        ) ||
+        row.localizedTags?.some((item) =>
+          item.zh.toLocaleLowerCase().includes(keyword) || item.en.toLocaleLowerCase().includes(keyword),
+        )
       const matchesKind = kindFilter === 'all' || (row.kind ?? 'image') === kindFilter
       const matchesStatus = statusFilter === 'all' || (row.status ?? 'published') === statusFilter
       return matchesKeyword && matchesKind && matchesStatus
@@ -367,6 +407,36 @@ function WallpaperTable() {
 
   const setField = <K extends keyof WallpaperForm>(key: K, value: WallpaperForm[K]) => {
     setForm((current) => ({...current, [key]: value}))
+  }
+
+  const toggleCategory = (id: string, checked: boolean) => {
+    setForm((current) => ({
+      ...current,
+      categoryIds: checked
+        ? [...new Set([...current.categoryIds, id])]
+        : current.categoryIds.filter((item) => item !== id),
+    }))
+  }
+
+  const addLocalizedTag = () => {
+    setForm((current) => ({
+      ...current,
+      localizedTags: [...current.localizedTags, {_key: `tag-${crypto.randomUUID()}`, zh: '', en: ''}],
+    }))
+  }
+
+  const updateLocalizedTag = (key: string, field: 'zh' | 'en', value: string) => {
+    setForm((current) => ({
+      ...current,
+      localizedTags: current.localizedTags.map((tag) => tag._key === key ? {...tag, [field]: value} : tag),
+    }))
+  }
+
+  const removeLocalizedTag = (key: string) => {
+    setForm((current) => ({
+      ...current,
+      localizedTags: current.localizedTags.filter((tag) => tag._key !== key),
+    }))
   }
 
   const parseSpreadsheet = async (file: File) => {
@@ -427,10 +497,22 @@ function WallpaperTable() {
         ['author', form.author], ['licenseName', form.licenseName],
       ]
       optionalText.forEach(([key, value]) => { if (value.trim()) payload[key] = value.trim() })
-      const categories = splitValues(form.categoriesText)
-      const tags = splitValues(form.tagsText)
-      if (categories.length) payload.categories = categories
-      if (tags.length) payload.tags = tags
+      const selectedCategories = categoryOptions.filter((item) => form.categoryIds.includes(item.id))
+      const localizedTags = form.localizedTags
+        .map((tag) => ({...tag, zh: tag.zh.trim(), en: tag.en.trim()}))
+        .filter((tag) => tag.zh || tag.en)
+      if (selectedCategories.length) {
+        payload.categoryRefs = selectedCategories.map((item) => ({
+          _type: 'reference',
+          _key: item.id,
+          _ref: categoryDocumentId(item.id),
+        }))
+        payload.categories = selectedCategories.map((item) => item.zh)
+      }
+      if (localizedTags.length) {
+        payload.localizedTags = localizedTags.map((tag) => ({_type: 'localizedTag', ...tag}))
+        payload.tags = localizedTags.map((tag) => tag.zh || tag.en)
+      }
       const width = optionalNumber(form.width)
       const height = optionalNumber(form.height)
       const duration = optionalNumber(form.duration)
@@ -455,7 +537,7 @@ function WallpaperTable() {
       }
 
       if (editing) {
-        const clearable = ['titleEn', 'subtitle', 'subtitleEn', 'categories', 'tags', 'width', 'height', 'duration', 'author', 'licenseName', 'sourceUrl', 'paletteStart', 'paletteMiddle', 'paletteEnd']
+        const clearable = ['titleEn', 'subtitle', 'subtitleEn', 'categoryRefs', 'categories', 'localizedTags', 'tags', 'width', 'height', 'duration', 'author', 'licenseName', 'sourceUrl', 'paletteStart', 'paletteMiddle', 'paletteEnd']
         const unset = clearable.filter((key) => !(key in payload))
         unset.push(form.kind === 'video' ? 'image' : 'video')
         await client.patch(editing._id).set(payload).unset(unset).commit()
@@ -527,10 +609,21 @@ function WallpaperTable() {
             ['licenseName', textCell(row, '授权说明', 'licenseName', 'license')],
           ]
           optionalText.forEach(([key, value]) => { if (value) payload[key] = value })
-          const categories = splitValues(textCell(row, '分类', 'categories'))
-          const tags = splitValues(textCell(row, '标签', 'tags'))
-          if (categories.length) payload.categories = categories
-          if (tags.length) payload.tags = tags
+          const categoryIds = resolvedCategoryIds(splitValues(textCell(row, '分类', 'categories')))
+          const selectedCategories = categoryOptions.filter((item) => categoryIds.includes(item.id))
+          const chineseTags = splitValues(textCell(row, '中文标签', '标签', 'tags', 'tagsZh'))
+          const englishTags = splitValues(textCell(row, '英文标签', 'tagsEn'))
+          const localizedTags = pairTags(chineseTags, englishTags)
+          if (selectedCategories.length) {
+            payload.categoryRefs = selectedCategories.map((item) => ({
+              _type: 'reference', _key: item.id, _ref: categoryDocumentId(item.id),
+            }))
+            payload.categories = selectedCategories.map((item) => item.zh)
+          }
+          if (localizedTags.length) {
+            payload.localizedTags = localizedTags.map((tag) => ({_type: 'localizedTag', ...tag}))
+            payload.tags = localizedTags.map((tag) => tag.zh || tag.en)
+          }
           const width = optionalNumber(readCell(row, '宽度', 'width'))
           const height = optionalNumber(readCell(row, '高度', 'height'))
           const duration = optionalNumber(readCell(row, '时长秒', '时长', 'duration'))
@@ -579,7 +672,10 @@ function WallpaperTable() {
   const exportCurrentRows = () => {
     const data = rows.map((row) => [
       row.title ?? '', row.mediaFileName ?? '', row.thumbnailFileName ?? '', row.kind ?? '',
-      (row.categories ?? []).join('，'), (row.tags ?? []).join('，'), row.featured ?? false, row.curated ?? false, row.popular ?? false,
+      (row.categoryDetails ?? []).map((item) => item.zh).join('，'),
+      (row.localizedTags ?? []).map((item) => item.zh).filter(Boolean).join('，'),
+      (row.localizedTags ?? []).map((item) => item.en).filter(Boolean).join('，'),
+      row.featured ?? false, row.curated ?? false, row.popular ?? false,
       row.status ?? 'published', row.sortOrder ?? 100, row.width ?? '', row.height ?? '', row.duration ?? '',
       row.author ?? '', row.licenseName ?? '', row.sourceUrl ?? '', row.titleEn ?? '', row.subtitle ?? '', row.subtitleEn ?? '',
       row.paletteStart ?? '', row.paletteMiddle ?? '', row.paletteEnd ?? '', row._id,
@@ -652,7 +748,7 @@ function WallpaperTable() {
         </Flex>
         <Flex gap={2} marginTop={4} wrap="wrap">
           <Box style={{minWidth: 280, flex: '1 1 420px'}}>
-            <TextInput value={search} onChange={(event) => setSearch(event.currentTarget.value)} placeholder="搜索名称或分类…" />
+            <TextInput value={search} onChange={(event) => setSearch(event.currentTarget.value)} placeholder="搜索中英文名称、分类或标签…" />
           </Box>
           <Box style={{width: 150}}>
             <Select value={kindFilter} onChange={(event) => setKindFilter(event.currentTarget.value as typeof kindFilter)}>
@@ -691,7 +787,7 @@ function WallpaperTable() {
                   <td style={cellStyle}>{row.thumbnailUrl ? <img src={`${row.thumbnailUrl}?w=240&h=140&fit=crop&auto=format`} alt="" style={{width: 92, height: 54, objectFit: 'cover', borderRadius: 7, display: 'block'}} /> : '—'}</td>
                   <td style={cellStyle}><Stack space={2}><Text weight="semibold" size={1}>{row.title || '未命名壁纸'}</Text>{row.titleEn && <Text size={1} muted>{row.titleEn}</Text>}</Stack></td>
                   <td style={cellStyle}><Badge tone={(row.kind ?? 'image') === 'video' ? 'suggest' : 'primary'}>{(row.kind ?? 'image') === 'video' ? '动态' : '图片'}</Badge></td>
-                  <td style={cellStyle}><Text size={1}>{row.categories?.join('、') || '—'}</Text></td>
+                  <td style={cellStyle}><Text size={1}>{row.categoryDetails?.map((item) => `${item.zh} / ${item.en}`).join('、') || '—'}</Text></td>
                   <td style={cellStyle}><Text size={1}>{row.width && row.height ? `${row.width}×${row.height}` : '—'}</Text></td>
                   <td style={cellStyle}><Text size={1}>{formatBytes(row.fileSize)}</Text></td>
                   <td style={cellStyle}><Checkbox checked={row.featured ?? false} onChange={(event) => void toggleGroup(row, 'featured', event.currentTarget.checked)} /></td>
@@ -745,7 +841,21 @@ function WallpaperTable() {
                 <Field label={`${form.kind === 'video' ? '视频文件' : '壁纸原图'}（可选）`}><input type="file" accept={form.kind === 'video' ? 'video/*' : 'image/*'} onChange={(event) => setMediaFile(event.currentTarget.files?.[0] ?? null)} /></Field>
                 <Field label="列表封面（可选）"><input type="file" accept="image/*" onChange={(event) => setThumbnailFile(event.currentTarget.files?.[0] ?? null)} /></Field>
                 {editing?.thumbnailUrl && <img src={`${editing.thumbnailUrl}?w=500&auto=format`} alt="当前封面" style={{width: 220, borderRadius: 8}} />}
-                <Field label="分类（可选，逗号分隔）"><TextInput value={form.categoriesText} onChange={(event) => setField('categoriesText', event.currentTarget.value)} placeholder="自然，电影感" /></Field>
+                <Field label="分类（中英自动对应，可多选）">
+                  <Card padding={3} radius={2} border>
+                    <Flex gap={3} wrap="wrap">
+                      {categoryOptions.map((category) => (
+                        <Flex key={category.id} align="center" gap={2} style={{minWidth: 145}}>
+                          <Checkbox
+                            checked={form.categoryIds.includes(category.id)}
+                            onChange={(event) => toggleCategory(category.id, event.currentTarget.checked)}
+                          />
+                          <Text size={1}>{category.zh} / {category.en}</Text>
+                        </Flex>
+                      ))}
+                    </Flex>
+                  </Card>
+                </Field>
                 <Flex gap={3} wrap="wrap">
                   <Box flex={1}><Field label="上架状态"><Select value={form.status} onChange={(event) => setField('status', event.currentTarget.value as WallpaperStatus)}><option value="published">已上架</option><option value="hidden">已下架</option></Select></Field></Box>
                   <Flex align="center" gap={2} style={{minWidth: 120}}><Checkbox checked={form.featured} onChange={(event) => setField('featured', event.currentTarget.checked)} /><Text size={1}>推荐轮播</Text></Flex>
@@ -759,7 +869,18 @@ function WallpaperTable() {
               <Field label="英文名称"><TextInput value={form.titleEn} onChange={(event) => setField('titleEn', event.currentTarget.value)} /></Field>
               <Field label="中文简介"><TextArea rows={2} value={form.subtitle} onChange={(event) => setField('subtitle', event.currentTarget.value)} /></Field>
               <Field label="英文简介"><TextArea rows={2} value={form.subtitleEn} onChange={(event) => setField('subtitleEn', event.currentTarget.value)} /></Field>
-              <Field label="搜索标签（逗号分隔）"><TextInput value={form.tagsText} onChange={(event) => setField('tagsText', event.currentTarget.value)} /></Field>
+              <Field label="搜索标签（每行中英一一对应）">
+                <Stack space={3}>
+                  {form.localizedTags.map((tag) => (
+                    <Flex key={tag._key} gap={2} align="center">
+                      <Box flex={1}><TextInput value={tag.zh} placeholder="中文标签" onChange={(event) => updateLocalizedTag(tag._key, 'zh', event.currentTarget.value)} /></Box>
+                      <Box flex={1}><TextInput value={tag.en} placeholder="English tag" onChange={(event) => updateLocalizedTag(tag._key, 'en', event.currentTarget.value)} /></Box>
+                      <Button text="移除" mode="bleed" tone="critical" onClick={() => removeLocalizedTag(tag._key)} />
+                    </Flex>
+                  ))}
+                  <Box><Button text="＋ 添加一组标签" mode="ghost" onClick={addLocalizedTag} /></Box>
+                </Stack>
+              </Field>
               <Flex gap={3} wrap="wrap"><Box flex={1}><Field label="宽度"><TextInput type="number" value={form.width} onChange={(event) => setField('width', event.currentTarget.value)} /></Field></Box><Box flex={1}><Field label="高度"><TextInput type="number" value={form.height} onChange={(event) => setField('height', event.currentTarget.value)} /></Field></Box>{form.kind === 'video' && <Box flex={1}><Field label="时长（秒）"><TextInput type="number" value={form.duration} onChange={(event) => setField('duration', event.currentTarget.value)} /></Field></Box>}</Flex>
               <Field label="作者"><TextInput value={form.author} onChange={(event) => setField('author', event.currentTarget.value)} /></Field>
               <Field label="授权说明"><TextInput value={form.licenseName} onChange={(event) => setField('licenseName', event.currentTarget.value)} /></Field>

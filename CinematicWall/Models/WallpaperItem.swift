@@ -31,6 +31,17 @@ struct WallpaperPalette: Codable, Hashable, Sendable {
     let endHex: String
 }
 
+struct LocalizedTaxonomyTerm: Codable, Hashable, Identifiable, Sendable {
+    let id: String
+    let zh: String
+    let en: String
+    let order: Int?
+
+    func localized(for language: AppLanguage) -> String {
+        language == .chinese ? zh : en
+    }
+}
+
 struct WallpaperItem: Identifiable, Codable, Hashable, Sendable {
     let id: UUID
     var title: String
@@ -47,6 +58,7 @@ struct WallpaperItem: Identifiable, Codable, Hashable, Sendable {
     var licenseName: String
     var sourceURL: URL?
     var categories: [String]
+    var categoryDetails: [LocalizedTaxonomyTerm]? = nil
     var palette: WallpaperPalette
     var isFavorite: Bool
     var createdAt: Date
@@ -67,6 +79,7 @@ struct WallpaperItem: Identifiable, Codable, Hashable, Sendable {
     var titleEn: String? = nil
     var subtitleEn: String? = nil
     var tags: [String]? = nil
+    var localizedTags: [LocalizedTaxonomyTerm]? = nil
     var isFeatured: Bool? = nil
     var isCurated: Bool? = nil
     var isPopular: Bool? = nil
@@ -120,6 +133,34 @@ struct WallpaperItem: Identifiable, Codable, Hashable, Sendable {
               let subtitleEn,
               !subtitleEn.isEmpty else { return subtitle }
         return subtitleEn
+    }
+
+    var categoryIDs: [String] {
+        if let categoryDetails, !categoryDetails.isEmpty {
+            return categoryDetails.map(\.id)
+        }
+        return categories.map(\.canonicalCategoryID)
+    }
+
+    func primaryCategoryLabel(for language: AppLanguage) -> String? {
+        if let first = categoryDetails?.first {
+            return first.localized(for: language)
+        }
+        return categories.first?.localizedCategory(for: language)
+    }
+
+    var searchableCategoryTerms: [String] {
+        if let categoryDetails, !categoryDetails.isEmpty {
+            return categoryDetails.flatMap { [$0.zh, $0.en] }
+        }
+        return categories
+    }
+
+    var searchableTagTerms: [String] {
+        if let localizedTags, !localizedTags.isEmpty {
+            return localizedTags.flatMap { [$0.zh, $0.en] }
+        }
+        return tags ?? []
     }
 }
 

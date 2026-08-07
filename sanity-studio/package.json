@@ -8,8 +8,10 @@
     "deploy": "sanity deploy",
     "import:local": "sanity exec scripts/import-local-library.mjs --with-user-token",
     "import:batch:20260806-evening": "sanity exec scripts/import-batch-2026-08-06-evening.mjs --with-user-token",
+    "import:batch:20260806-pets": "sanity exec scripts/import-batch-2026-08-06-pets.mjs --with-user-token",
     "previews:generate": "sanity exec scripts/generate-video-previews.mjs --with-user-token",
     "migrate:groups": "sanity exec scripts/migrate-home-groups.mjs --with-user-token",
+    "migrate:bilingual-taxonomy": "sanity exec scripts/migrate-bilingual-taxonomy.mjs --with-user-token",
     "verify:import": "sanity exec scripts/verify-import.mjs --with-user-token"
   },
   "dependencies": {

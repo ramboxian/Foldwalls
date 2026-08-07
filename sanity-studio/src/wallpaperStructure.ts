@@ -5,6 +5,7 @@ export const wallpaperStructure: StructureResolver = (S) =>
     .title('内容管理')
     .items([
       S.documentTypeListItem('wallpaper').title('全部壁纸'),
+      S.documentTypeListItem('category').title('分类字典（中英对应）'),
       S.divider(),
       S.listItem()
         .title('已上架')

@@ -209,7 +209,7 @@ struct RootView: View {
     @State private var showsNowPlaying = false
     @State private var showsMiniNowPlaying = false
     @State private var filter: LibraryFilter = .all
-    @State private var selectedCategory = "全部"
+    @State private var selectedCategory = "all"
     @State private var exploreOrdering: ExploreOrdering = .latest
     @State private var heroIsVisible = true
     @State private var exploreMastheadIsVisible = true
@@ -248,12 +248,28 @@ struct RootView: View {
 
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
 
-    private var categories: [String] {
-        let available = Set(library.items.flatMap(\.categories))
-        let preferred = ["自然", "城市", "太空", "抽象", "夜晚", "深色", "天空", "海洋", "森林", "动漫", "暖色", "蓝色", "静谧", "极简"]
-        let known = preferred.filter(available.contains)
-        let remaining = available.subtracting(known).sorted()
-        return ["全部"] + known + remaining
+    private var categories: [LocalizedTaxonomyTerm] {
+        var byID: [String: LocalizedTaxonomyTerm] = [:]
+        for item in library.items {
+            if let details = item.categoryDetails, !details.isEmpty {
+                details.forEach { byID[$0.id] = $0 }
+            } else {
+                item.categories.forEach { label in
+                    byID[label.canonicalCategoryID] = LocalizedTaxonomyTerm(
+                        id: label.canonicalCategoryID,
+                        zh: label,
+                        en: label.localizedCategory(for: .english),
+                        order: 999
+                    )
+                }
+            }
+        }
+        let sorted = byID.values.sorted {
+            let left = $0.order ?? 999
+            let right = $1.order ?? 999
+            return left == right ? $0.zh < $1.zh : left < right
+        }
+        return [LocalizedTaxonomyTerm(id: "all", zh: "全部", en: "All", order: -1)] + sorted
     }
 
     private var cloudItems: [WallpaperItem] {
@@ -338,7 +354,7 @@ struct RootView: View {
         let source = exploreOrdering == .latest ? latestItems : explorePopularItems
         return source.filter { item in
             filter.includes(item)
-                && (selectedCategory == "全部" || item.categories.contains(selectedCategory))
+                && (selectedCategory == "all" || item.categoryIDs.contains(selectedCategory))
         }
     }
 
@@ -386,8 +402,8 @@ struct RootView: View {
             || item.titleEn?.localizedCaseInsensitiveContains(term) == true
             || item.subtitle.localizedCaseInsensitiveContains(term)
             || item.subtitleEn?.localizedCaseInsensitiveContains(term) == true
-            || item.tags?.contains { $0.localizedCaseInsensitiveContains(term) } == true
-            || item.categories.contains { $0.localizedCaseInsensitiveContains(term) }
+            || item.searchableTagTerms.contains { $0.localizedCaseInsensitiveContains(term) }
+            || item.searchableCategoryTerms.contains { $0.localizedCaseInsensitiveContains(term) }
             || item.author.localizedCaseInsensitiveContains(term)
     }
 
@@ -1637,16 +1653,14 @@ struct RootView: View {
     }
 
     private func categorySection(width: CGFloat) -> some View {
-        let source = homeMoodItems
-        let labels = ["自然", "城市", "太空", "抽象", "夜晚", "深色"]
+        let labels = Array(categories.dropFirst())
         return VStack(alignment: .leading, spacing: 18) {
             sectionHeader(language.text("Explore by Mood", "按氛围探索"), subtitle: language.text("Start with a feeling, find a new desktop", "从场景开始寻找你的下一张壁纸")) { destination = .explore }
             LazyVGrid(columns: contentColumns(for: width), spacing: 22) {
-                ForEach(Array(labels.enumerated()), id: \.offset) { index, label in
-                    if !source.isEmpty {
-                        let item = source[index % source.count]
+                ForEach(labels) { category in
+                    if let item = latestItems.first(where: { $0.categoryIDs.contains(category.id) }) {
                         Button {
-                            selectedCategory = label
+                            selectedCategory = category.id
                             destination = .explore
                         } label: {
                             ZStack(alignment: .bottomLeading) {
@@ -1654,7 +1668,7 @@ struct RootView: View {
                                     .aspectRatio(16 / 9, contentMode: .fit)
                                 LinearGradient(colors: [.clear, .black.opacity(0.62)], startPoint: .center, endPoint: .bottom)
                                     .clipShape(RoundedRectangle(cornerRadius: CinematicTheme.cardRadius, style: .continuous))
-                                Text(label.localizedCategory(for: language))
+                                Text(category.localized(for: language))
                                     .font(.system(size: 32, weight: .bold, design: .rounded))
                                     .foregroundStyle(.white)
                                     .padding(20)
@@ -1941,9 +1955,9 @@ struct RootView: View {
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 5) {
-                        ForEach(categories, id: \.self) { category in
-                            filterChip(category.localizedCategory(for: language), selected: selectedCategory == category) {
-                                withAnimation(.snappy(duration: 0.24)) { selectedCategory = category }
+                        ForEach(categories) { category in
+                            filterChip(category.localized(for: language), selected: selectedCategory == category.id) {
+                                withAnimation(.snappy(duration: 0.24)) { selectedCategory = category.id }
                             }
                         }
                     }
