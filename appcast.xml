@@ -6,18 +6,17 @@
     <description>Foldwalls stable release feed</description>
     <language>zh-cn</language>
     <item>
-      <title>Foldwalls 0.4.2</title>
-      <pubDate>Fri, 07 Aug 2026 16:37:28 +0800</pubDate>
-      <sparkle:version>6</sparkle:version>
-      <sparkle:shortVersionString>0.4.2</sparkle:shortVersionString>
+      <title>Foldwalls 0.4.3</title>
+      <pubDate>Fri, 07 Aug 2026 17:16:18 +0800</pubDate>
+      <sparkle:version>7</sparkle:version>
+      <sparkle:shortVersionString>0.4.3</sparkle:shortVersionString>
       <description sparkle:descriptionFormat="plain-text"><![CDATA[
-Foldwalls 0.4.2
+Foldwalls 0.4.3
 
-- 修复首页 Hero、详情页和卡片悬停视频被错误识别为后台状态、只显示静态封面的问题。
-- 页面视频现在跟随 macOS 应用的真实前后台状态播放；回到前台自动恢复，进入后台自动暂停。
-- 保持 Hero 原片播放、8 秒轮播与卡片轻量预览缓存策略不变。
+- 更新应用图标，图标自身带透明圆角，在较早版本的 macOS 上也能正确显示。
+- 修复首页分类封面重复，同一组分类不再复用同一张壁纸作为封面。
       ]]></description>
-      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v0.4.2/Foldwalls-0.4.2-macOS.zip" length="9391508" type="application/octet-stream" sparkle:edSignature="BRQqKmVOH+2kxlRkwOPFCfhyl0sNmW2CnClzhW6Uu6T9qPqGF7k+ANx4VqsALwW0/66Ds/gqcM7kcRAvG6lnBQ==" />
+      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v0.4.3/Foldwalls-0.4.3-macOS.zip" length="9882864" type="application/octet-stream" sparkle:edSignature="BPOz9qqLlYs92kabYHXlfyOPjTJe+HtSfrLsT1ZTVv3833S8uUkPuhqspcp3DN18BWIqjeeKXFIZvwXtbyvkAg==" />
     </item>
   </channel>
 </rss>
