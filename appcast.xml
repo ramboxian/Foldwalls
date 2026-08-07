@@ -6,19 +6,18 @@
     <description>Foldwalls stable release feed</description>
     <language>zh-cn</language>
     <item>
-      <title>Foldwalls 0.4.0</title>
-      <pubDate>Fri, 07 Aug 2026 15:53:35 +0800</pubDate>
-      <sparkle:version>4</sparkle:version>
-      <sparkle:shortVersionString>0.4.0</sparkle:shortVersionString>
+      <title>Foldwalls 0.4.1</title>
+      <pubDate>Fri, 07 Aug 2026 16:11:04 +0800</pubDate>
+      <sparkle:version>5</sparkle:version>
+      <sparkle:shortVersionString>0.4.1</sparkle:shortVersionString>
       <description sparkle:descriptionFormat="plain-text"><![CDATA[
-Foldwalls 0.4.0
+Foldwalls 0.4.1
 
-- 壁纸原片、封面和视频预览迁移到 Cloudflare R2，显著降低 Sanity 媒体流量消耗。
-- 首页 Hero 保持原片画质，首次加载后写入持久缓存；卡片悬停预览同样复用本地缓存。
-- 新增 R2 与 Sanity 双源容错，R2 请求失败时自动回退原资源，更新过程不中断现有用户。
-- 媒体分发支持视频分段请求和长期缓存，提升重复播放与下载体验。
+- 修复首页 Hero 与卡片预览必须等待完整视频下载后才开始播放的问题。
+- Hero 现在立即流式播放原片，同时在后台写入持久缓存；再次访问直接读取本地文件。
+- 视频卡片悬停后约 180ms 即开始播放轻量预览，并继续保留本地缓存与 Sanity 回退。
       ]]></description>
-      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v0.4.0/Foldwalls-0.4.0-macOS.zip" length="9385276" type="application/octet-stream" sparkle:edSignature="jDlDz9Fr6KJGJviXj4iI3wN9ImjHM3hxC56HYwyGGz3q0razcu/aHPRTody4jIsW3D+X8t/AaOFSXpKlkaVvDg==" />
+      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v0.4.1/Foldwalls-0.4.1-macOS.zip" length="9388373" type="application/octet-stream" sparkle:edSignature="0huzaRQu0OyBfqVxl0lM/JLy4qmklt2J4FIO8PBJrY63FSwYbg3n0wv6kC3B2mLPmP8mSln+DQHt1ECWfGMsCg==" />
     </item>
   </channel>
 </rss>
