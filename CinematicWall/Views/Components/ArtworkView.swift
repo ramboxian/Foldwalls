@@ -141,20 +141,23 @@ enum VideoPlaybackAsset: String {
 
 struct HeroMediaView: View {
     @EnvironmentObject private var library: WallpaperLibrary
-    @Environment(\.scenePhase) private var scenePhase
     let item: WallpaperItem
     var isPlaying = true
     var videoAsset: VideoPlaybackAsset = .localOriginal
 
     @State private var resolvedVideoURL: URL?
     @State private var videoIsReady = false
+    // RootView lives in a manually managed NSHostingView rather than a SwiftUI
+    // WindowGroup. `scenePhase` remains `.background` in that configuration,
+    // even while the native window is key, so use real AppKit activation state.
+    @State private var appIsActive = NSApplication.shared.isActive
 
     var body: some View {
         ZStack {
             ArtworkView(item: item, cornerRadius: 0)
 
             if item.kind == .video, let playableURL {
-                LoopingVideoPreview(url: playableURL, isPlaying: isPlaying && scenePhase == .active) {
+                LoopingVideoPreview(url: playableURL, isPlaying: isPlaying && appIsActive) {
                     withAnimation(.easeOut(duration: 0.18)) {
                         videoIsReady = true
                     }
@@ -165,8 +168,14 @@ struct HeroMediaView: View {
         .onChange(of: playableURL) { _, _ in
             videoIsReady = false
         }
-        .task(id: "\(item.id.uuidString)-\(item.remotePreviewVideoURL?.absoluteString ?? item.remoteMediaURL?.absoluteString ?? item.localPath)-\(videoAsset.rawValue)-\(isPlaying)-\(scenePhase)") {
-            guard item.kind == .video, isPlaying, scenePhase == .active else {
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            appIsActive = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didResignActiveNotification)) { _ in
+            appIsActive = false
+        }
+        .task(id: "\(item.id.uuidString)-\(item.remotePreviewVideoURL?.absoluteString ?? item.remoteMediaURL?.absoluteString ?? item.localPath)-\(videoAsset.rawValue)-\(isPlaying)-\(appIsActive)") {
+            guard item.kind == .video, isPlaying, appIsActive else {
                 resolvedVideoURL = nil
                 return
             }
