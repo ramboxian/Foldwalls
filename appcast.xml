@@ -6,21 +6,18 @@
     <description>Foldwalls stable release feed</description>
     <language>zh-cn</language>
     <item>
-      <title>Foldwalls 0.3.1</title>
-      <pubDate>Fri, 07 Aug 2026 11:35:13 +0800</pubDate>
-      <sparkle:version>2</sparkle:version>
-      <sparkle:shortVersionString>0.3.1</sparkle:shortVersionString>
+      <title>Foldwalls 0.3.2</title>
+      <pubDate>Fri, 07 Aug 2026 11:58:33 +0800</pubDate>
+      <sparkle:version>3</sparkle:version>
+      <sparkle:shortVersionString>0.3.2</sparkle:shortVersionString>
       <description sparkle:descriptionFormat="plain-text"><![CDATA[
-Foldwalls 0.3.1
+Foldwalls 0.3.2
 
-- 新增中英文分类与搜索标签体系，切换语言后分类、卡片和搜索结果会正确对应。
-- 扩充人像、女孩、宠物、电影、游戏、科幻、车辆等内容分类，并按云端配置动态展示。
-- 优化探索筛选、相似壁纸与关键词搜索逻辑，兼容旧版分类数据。
-- 升级 Sanity 壁纸后台，支持双语分类维护、双语标签编辑、表格筛选及批量迁移。
-- 修复部分 Mac 安装后启动崩溃的问题，提升 Sparkle 更新组件兼容性。
-- 新增 Retina 定制安装界面，支持将 Foldwalls 直接拖入 Applications 文件夹。
+- 修复更新说明中文显示乱码的问题。
+- 优化更新弹窗的主要按钮、进度图标和中英文状态文案。
+- 更新 DMG 安装界面提示，补充 macOS 安全拦截时的打开方法。
       ]]></description>
-      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v0.3.1/Foldwalls-0.3.1-macOS.zip" length="9331882" type="application/octet-stream" sparkle:edSignature="tTl6rGMc8k+srUiFu21cMAQrRXiA8zjGg2qzCmGR+dfcizmdDBSv5zX3v8k3ibdo5fmzq9h+V1y8scm7Ys2XDw==" />
+      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v0.3.2/Foldwalls-0.3.2-macOS.zip" length="9337278" type="application/octet-stream" sparkle:edSignature="8iFazKNkp5wrRg2EP4u1U7h+4qbzRiS1z3ZL302a1xTXK2tu7LQCsMpNqPPoIOGk11xAVCqNSqsMkDDQGQFCCg==" />
     </item>
   </channel>
 </rss>
