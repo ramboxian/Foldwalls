@@ -12,3 +12,4 @@ xcuserdata/
 dist/
 outputs/
 sanity-studio/node_modules/
+cloudflare-worker/.wrangler/
