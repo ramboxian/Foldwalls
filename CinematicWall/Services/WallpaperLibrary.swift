@@ -416,6 +416,20 @@ final class WallpaperLibrary: ObservableObject {
         return result
     }
 
+    /// Starts a card preview without waiting for the complete preview file to
+    /// be written to disk. The first hover streams the lightweight preview;
+    /// `resolvedVideoPreviewURL` can cache it concurrently for later hovers.
+    func immediateVideoPreviewURL(for item: WallpaperItem) -> URL? {
+        guard item.kind == .video else { return nil }
+        guard let remoteURL = item.remotePreviewVideoURL else {
+            return item.isDownloaded ? item.localURL : nil
+        }
+        let cachedURL = videoPreviewCacheDestination(for: item, remoteURL: remoteURL)
+        return validCachedVideoPreview(at: cachedURL, for: item, remoteURL: remoteURL)
+            ? cachedURL
+            : remoteURL
+    }
+
     /// Returns the full-resolution video used exclusively by the Home hero.
     /// Originals and compressed card previews live in separate persistent
     /// caches so revisiting a hero never substitutes the lightweight asset or
@@ -458,9 +472,8 @@ final class WallpaperLibrary: ObservableObject {
         return result
     }
 
-    /// Starts a Home hero immediately from the original Sanity asset. If that
-    /// original is already cached locally, use the cache instead. Card previews
-    /// continue to use their separate compressed and persistent preview files.
+    /// Starts a Home hero immediately from the full-resolution primary asset.
+    /// If that original is already cached locally, use the cache instead.
     func immediateHeroVideoURL(for item: WallpaperItem) -> URL? {
         guard item.kind == .video else { return nil }
         if item.isDownloaded { return item.localURL }

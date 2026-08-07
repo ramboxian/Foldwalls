@@ -140,7 +140,9 @@ struct WallpaperCard: View {
             }
 
             do {
-                try await Task.sleep(for: .seconds(1.5))
+                // Avoid accidental fly-over playback without making a real
+                // hover feel like a static card.
+                try await Task.sleep(for: .milliseconds(180))
             } catch {
                 return
             }

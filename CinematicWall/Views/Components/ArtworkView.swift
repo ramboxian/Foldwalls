@@ -166,21 +166,34 @@ struct HeroMediaView: View {
             videoIsReady = false
         }
         .task(id: "\(item.id.uuidString)-\(item.remotePreviewVideoURL?.absoluteString ?? item.remoteMediaURL?.absoluteString ?? item.localPath)-\(videoAsset.rawValue)-\(isPlaying)-\(scenePhase)") {
-            guard item.kind == .video, isPlaying, scenePhase == .active else { return }
-            let resolvedURL: URL?
+            guard item.kind == .video, isPlaying, scenePhase == .active else {
+                resolvedVideoURL = nil
+                return
+            }
+            resolvedVideoURL = nil
+
             switch videoAsset {
             case .original:
-                // The Home hero keeps original quality. The first visit stores
-                // the complete file in the persistent original cache; later
-                // visits play locally without another cloud transfer.
-                resolvedURL = await library.resolvedOriginalVideoURL(for: item)
+                // Start the full-resolution stream immediately, then populate
+                // the persistent original cache without holding up playback.
+                let immediateURL = library.immediateHeroVideoURL(for: item)
+                resolvedVideoURL = immediateURL
+                guard immediateURL?.isFileURL != true else { return }
+                let cachedURL = await library.resolvedOriginalVideoURL(for: item)
+                guard !Task.isCancelled else { return }
+                if !videoIsReady, let cachedURL { resolvedVideoURL = cachedURL }
             case .compressedPreview:
-                resolvedURL = await library.resolvedVideoPreviewURL(for: item)
+                // The first hover streams the small preview immediately while
+                // the same asset is cached for subsequent hovers.
+                let immediateURL = library.immediateVideoPreviewURL(for: item)
+                resolvedVideoURL = immediateURL
+                guard immediateURL?.isFileURL != true else { return }
+                let cachedURL = await library.resolvedVideoPreviewURL(for: item)
+                guard !Task.isCancelled else { return }
+                if !videoIsReady, let cachedURL { resolvedVideoURL = cachedURL }
             case .localOriginal:
-                resolvedURL = nil
+                resolvedVideoURL = item.isDownloaded ? item.localURL : nil
             }
-            guard !Task.isCancelled else { return }
-            resolvedVideoURL = resolvedURL
         }
     }
 
