@@ -195,6 +195,13 @@ private enum ExploreOrdering: String, CaseIterable, Identifiable {
     }
 }
 
+private struct CategoryCover: Identifiable {
+    let category: LocalizedTaxonomyTerm
+    let item: WallpaperItem
+
+    var id: String { category.id }
+}
+
 struct RootView: View {
     @EnvironmentObject private var library: WallpaperLibrary
     @EnvironmentObject private var engine: WallpaperEngine
@@ -1654,31 +1661,75 @@ struct RootView: View {
 
     private func categorySection(width: CGFloat) -> some View {
         let labels = Array(categories.dropFirst())
+        let covers = uniqueCategoryCovers(for: labels)
         return VStack(alignment: .leading, spacing: 18) {
             sectionHeader(language.text("Explore by Mood", "按氛围探索"), subtitle: language.text("Start with a feeling, find a new desktop", "从场景开始寻找你的下一张壁纸")) { destination = .explore }
             LazyVGrid(columns: contentColumns(for: width), spacing: 22) {
-                ForEach(labels) { category in
-                    if let item = latestItems.first(where: { $0.categoryIDs.contains(category.id) }) {
-                        Button {
-                            selectedCategory = category.id
-                            destination = .explore
-                        } label: {
-                            ZStack(alignment: .bottomLeading) {
-                                ArtworkView(item: item, cornerRadius: CinematicTheme.cardRadius)
-                                    .aspectRatio(16 / 9, contentMode: .fit)
-                                LinearGradient(colors: [.clear, .black.opacity(0.62)], startPoint: .center, endPoint: .bottom)
-                                    .clipShape(RoundedRectangle(cornerRadius: CinematicTheme.cardRadius, style: .continuous))
-                                Text(category.localized(for: language))
-                                    .font(.system(size: 32, weight: .bold, design: .rounded))
-                                    .foregroundStyle(.white)
-                                    .padding(20)
-                            }
+                ForEach(covers) { cover in
+                    Button {
+                        selectedCategory = cover.category.id
+                        destination = .explore
+                    } label: {
+                        ZStack(alignment: .bottomLeading) {
+                            ArtworkView(item: cover.item, cornerRadius: CinematicTheme.cardRadius)
+                                .aspectRatio(16 / 9, contentMode: .fit)
+                            LinearGradient(colors: [.clear, .black.opacity(0.62)], startPoint: .center, endPoint: .bottom)
+                                .clipShape(RoundedRectangle(cornerRadius: CinematicTheme.cardRadius, style: .continuous))
+                            Text(cover.category.localized(for: language))
+                                .font(.system(size: 32, weight: .bold, design: .rounded))
+                                .foregroundStyle(.white)
+                                .padding(20)
                         }
-                        .buttonStyle(CinematicInteractiveButtonStyle())
                     }
+                    .buttonStyle(CinematicInteractiveButtonStyle())
                 }
             }
             .padding(.horizontal, CinematicTheme.pageGutter)
+        }
+    }
+
+    /// Produces a maximum one-to-one matching between categories and their
+    /// own wallpapers. Categories with fewer candidates are assigned first,
+    /// while the augmenting-path pass keeps the result globally unique.
+    private func uniqueCategoryCovers(for categories: [LocalizedTaxonomyTerm]) -> [CategoryCover] {
+        let rankedItems = latestItems
+        let candidatesByCategory = Dictionary(uniqueKeysWithValues: categories.map { category in
+            (category.id, rankedItems.filter { $0.categoryIDs.contains(category.id) })
+        })
+        let assignmentOrder = categories.sorted { lhs, rhs in
+            let leftCount = candidatesByCategory[lhs.id]?.count ?? 0
+            let rightCount = candidatesByCategory[rhs.id]?.count ?? 0
+            if leftCount != rightCount { return leftCount < rightCount }
+            let leftOrder = lhs.order ?? 999
+            let rightOrder = rhs.order ?? 999
+            return leftOrder == rightOrder ? lhs.id < rhs.id : leftOrder < rightOrder
+        }
+
+        var categoryOwnerByItemID: [UUID: String] = [:]
+        var itemByCategoryID: [String: WallpaperItem] = [:]
+
+        func assignCover(to categoryID: String, visitedItemIDs: inout Set<UUID>) -> Bool {
+            for candidate in candidatesByCategory[categoryID] ?? [] {
+                guard visitedItemIDs.insert(candidate.id).inserted else { continue }
+
+                if let currentOwner = categoryOwnerByItemID[candidate.id] {
+                    guard assignCover(to: currentOwner, visitedItemIDs: &visitedItemIDs) else { continue }
+                }
+
+                categoryOwnerByItemID[candidate.id] = categoryID
+                itemByCategoryID[categoryID] = candidate
+                return true
+            }
+            return false
+        }
+
+        for category in assignmentOrder {
+            var visitedItemIDs = Set<UUID>()
+            _ = assignCover(to: category.id, visitedItemIDs: &visitedItemIDs)
+        }
+
+        return categories.compactMap { category in
+            itemByCategoryID[category.id].map { CategoryCover(category: category, item: $0) }
         }
     }
 
