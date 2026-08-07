@@ -170,9 +170,10 @@ struct HeroMediaView: View {
             let resolvedURL: URL?
             switch videoAsset {
             case .original:
-                // The Home hero streams the original asset immediately instead
-                // of waiting for a complete file transfer before showing motion.
-                resolvedURL = library.immediateHeroVideoURL(for: item)
+                // The Home hero keeps original quality. The first visit stores
+                // the complete file in the persistent original cache; later
+                // visits play locally without another cloud transfer.
+                resolvedURL = await library.resolvedOriginalVideoURL(for: item)
             case .compressedPreview:
                 resolvedURL = await library.resolvedVideoPreviewURL(for: item)
             case .localOriginal:

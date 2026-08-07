@@ -785,6 +785,14 @@ final class WallpaperLibrary: ObservableObject {
             return updateDownloadedItem(item, destination: destination)
         }
 
+        if item.kind == .video {
+            let heroCache = originalVideoCacheDestination(for: item, remoteURL: remoteURL)
+            if validCachedOriginalVideo(at: heroCache, for: item) {
+                try fileManager.copyItem(at: heroCache, to: destination)
+                return updateDownloadedItem(item, destination: destination)
+            }
+        }
+
         let (temporaryURL, _) = try await downloadFirstAvailable(
             urls: [remoteURL, item.remoteMediaFallbackURL].compactMap { $0 },
             timeout: 300,
