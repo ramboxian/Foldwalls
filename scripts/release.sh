@@ -123,6 +123,7 @@ fi
 # packaged executable against an empty library and require it to remain alive.
 cold_launch_root="$release_work_dir/cold-launch-library"
 cold_launch_log="$release_work_dir/cold-launch.log"
+cold_launch_manifest="$cold_launch_root/library.json"
 rm -rf "$cold_launch_root"
 mkdir -p "$cold_launch_root"
 
@@ -130,10 +131,15 @@ FOLDWALLS_LIBRARY_ROOT="$cold_launch_root" \
   "$app_path/Contents/MacOS/Foldwalls" >"$cold_launch_log" 2>&1 &
 cold_launch_pid=$!
 cold_launch_failed=false
-for _ in 1 2 3 4 5 6; do
+cold_launch_catalog_loaded=false
+for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
   sleep 1
   if ! kill -0 "$cold_launch_pid" 2>/dev/null; then
     cold_launch_failed=true
+    break
+  fi
+  if [[ -s "$cold_launch_manifest" ]] && grep -q '"remoteID"' "$cold_launch_manifest"; then
+    cold_launch_catalog_loaded=true
     break
   fi
 done
@@ -148,9 +154,17 @@ if [[ "$cold_launch_failed" == true ]]; then
   exit 1
 fi
 
+if [[ "$cold_launch_catalog_loaded" != true ]]; then
+  kill -TERM "$cold_launch_pid" 2>/dev/null || true
+  wait "$cold_launch_pid" 2>/dev/null || true
+  echo "Foldwalls stayed alive but did not load the fresh cloud catalog." >&2
+  sed -n '1,160p' "$cold_launch_log" >&2
+  exit 1
+fi
+
 kill -TERM "$cold_launch_pid" 2>/dev/null || true
 wait "$cold_launch_pid" 2>/dev/null || true
-echo "Clean cold-launch check passed."
+echo "Clean cold-launch and first-run catalog checks passed."
 
 ditto -c -k --sequesterRsrc --keepParent "$app_path" "$zip_path"
 

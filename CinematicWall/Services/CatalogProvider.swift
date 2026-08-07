@@ -22,9 +22,11 @@ struct CatalogEntry: Codable, Sendable {
     let licenseName: String
     let sourceURL: URL?
     let categories: [String]
-    let categoryDetails: [LocalizedTaxonomyTerm]
+    // Broken or unpublished Sanity references are returned as `null`. Keep
+    // those individual values from invalidating the entire first-run catalog.
+    let categoryDetails: [LocalizedTaxonomyTerm?]
     let tags: [String]
-    let localizedTags: [LocalizedTaxonomyTerm]
+    let localizedTags: [LocalizedTaxonomyTerm?]
     let featured: Bool
     let curated: Bool
     let popular: Bool
@@ -80,12 +82,12 @@ struct SanityCatalogProvider: WallpaperCatalogProvider {
           "licenseName": coalesce(licenseName, ""),
           "sourceURL": sourceUrl,
           "categories": coalesce(categories, []),
-          "categoryDetails": coalesce(categoryRefs[]->{
+          "categoryDetails": array::compact(coalesce(categoryRefs[]->{
             "id": coalesce(key, _id),
             "zh": coalesce(titleZh, ""),
             "en": coalesce(titleEn, titleZh, ""),
             order
-          }, []),
+          }, [])),
           "tags": coalesce(tags, []),
           "localizedTags": coalesce(localizedTags[]{
             "id": coalesce(_key, zh, en),

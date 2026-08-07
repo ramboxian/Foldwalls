@@ -39,7 +39,10 @@ export const CATEGORY_BY_LABEL = new Map(
 )
 
 export function categoryDocumentId(id: string): string {
-  return `category.${id}`
+  // Public Sanity datasets only expose root-path documents anonymously.
+  // A dot creates a private sub-path, so category IDs must stay dot-free for
+  // the client to resolve categoryRefs without shipping an API token.
+  return `category-${id}`
 }
 
 export function resolveCategory(value: string): CategoryDefinition | undefined {

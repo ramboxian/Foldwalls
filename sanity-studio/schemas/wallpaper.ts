@@ -69,7 +69,11 @@ export const wallpaper = defineType({
       description: '从分类字典选择；每一项都自带中文和英文名称，客户端切换语言时自动对应。',
       type: 'array',
       group: 'basic',
-      of: [defineArrayMember({type: 'reference', to: [{type: 'category'}]})],
+      of: [defineArrayMember({
+        type: 'reference',
+        to: [{type: 'category'}],
+        options: {filter: '_id in path("*")'},
+      })],
       validation: (rule) => rule.unique(),
     }),
     defineField({

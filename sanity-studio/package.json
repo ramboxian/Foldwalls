@@ -12,6 +12,7 @@
     "previews:generate": "sanity exec scripts/generate-video-previews.mjs --with-user-token",
     "migrate:groups": "sanity exec scripts/migrate-home-groups.mjs --with-user-token",
     "migrate:bilingual-taxonomy": "sanity exec scripts/migrate-bilingual-taxonomy.mjs --with-user-token",
+    "migrate:public-category-refs": "sanity exec scripts/migrate-public-category-refs.mjs --with-user-token",
     "verify:import": "sanity exec scripts/verify-import.mjs --with-user-token"
   },
   "dependencies": {

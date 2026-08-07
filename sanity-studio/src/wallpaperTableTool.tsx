@@ -159,7 +159,7 @@ const query = `*[_type == "wallpaper"] | order(sortOrder desc, _createdAt desc) 
   "fileSize": select(kind == "video" => video.asset->size, image.asset->size)
 }`
 
-const categoryQuery = `*[_type == "category" && enabled != false] | order(order asc, titleZh asc) {
+const categoryQuery = `*[_type == "category" && _id in path("*") && enabled != false] | order(order asc, titleZh asc) {
   "id": key, "zh": titleZh, "en": titleEn, order
 }`
 
