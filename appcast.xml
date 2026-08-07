@@ -6,18 +6,19 @@
     <description>Foldwalls stable release feed</description>
     <language>zh-cn</language>
     <item>
-      <title>Foldwalls 0.3.2</title>
-      <pubDate>Fri, 07 Aug 2026 11:58:33 +0800</pubDate>
-      <sparkle:version>3</sparkle:version>
-      <sparkle:shortVersionString>0.3.2</sparkle:shortVersionString>
+      <title>Foldwalls 0.4.0</title>
+      <pubDate>Fri, 07 Aug 2026 15:53:35 +0800</pubDate>
+      <sparkle:version>4</sparkle:version>
+      <sparkle:shortVersionString>0.4.0</sparkle:shortVersionString>
       <description sparkle:descriptionFormat="plain-text"><![CDATA[
-Foldwalls 0.3.2
+Foldwalls 0.4.0
 
-- 修复更新说明中文显示乱码的问题。
-- 优化更新弹窗的主要按钮、进度图标和中英文状态文案。
-- 更新 DMG 安装界面提示，补充 macOS 安全拦截时的打开方法。
+- 壁纸原片、封面和视频预览迁移到 Cloudflare R2，显著降低 Sanity 媒体流量消耗。
+- 首页 Hero 保持原片画质，首次加载后写入持久缓存；卡片悬停预览同样复用本地缓存。
+- 新增 R2 与 Sanity 双源容错，R2 请求失败时自动回退原资源，更新过程不中断现有用户。
+- 媒体分发支持视频分段请求和长期缓存，提升重复播放与下载体验。
       ]]></description>
-      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v0.3.2/Foldwalls-0.3.2-macOS.zip" length="9337278" type="application/octet-stream" sparkle:edSignature="8iFazKNkp5wrRg2EP4u1U7h+4qbzRiS1z3ZL302a1xTXK2tu7LQCsMpNqPPoIOGk11xAVCqNSqsMkDDQGQFCCg==" />
+      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v0.4.0/Foldwalls-0.4.0-macOS.zip" length="9385276" type="application/octet-stream" sparkle:edSignature="jDlDz9Fr6KJGJviXj4iI3wN9ImjHM3hxC56HYwyGGz3q0razcu/aHPRTody4jIsW3D+X8t/AaOFSXpKlkaVvDg==" />
     </item>
   </channel>
 </rss>
