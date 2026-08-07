@@ -14,6 +14,7 @@
     "migrate:bilingual-taxonomy": "sanity exec scripts/migrate-bilingual-taxonomy.mjs --with-user-token",
     "migrate:public-category-refs": "sanity exec scripts/migrate-public-category-refs.mjs --with-user-token",
     "r2:migrate": "sanity exec scripts/migrate-assets-to-r2.mjs --with-user-token",
+    "r2:rewrite-base": "sanity exec scripts/rewrite-r2-public-base.mjs --with-user-token",
     "r2:cutover": "sanity exec scripts/set-r2-delivery.mjs --with-user-token",
     "verify:import": "sanity exec scripts/verify-import.mjs --with-user-token"
   },

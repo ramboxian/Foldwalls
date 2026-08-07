@@ -48,13 +48,14 @@ pnpm deploy
 
 ## R2 媒体迁移与安全切换
 
-Sanity 继续负责元数据和可视化后台；原图、封面与轻量视频预览会复制到 Cloudflare R2。迁移脚本只在本机运行，R2 密钥不会进入 Studio 网页或 macOS 客户端。
+Sanity 继续负责元数据和可视化后台；原图、封面与卡片悬停视频预览会复制到 Cloudflare R2。首页 Hero 始终播放 R2 原片，不降级为轻量预览。迁移脚本只在本机运行，R2 密钥不会进入 Studio 网页或 macOS 客户端。
 
-1. 将 `.env.example` 复制为 `.env` 并填写 R2 信息。
+1. macOS 开发机优先从系统钥匙串读取 `com.foldwalls.r2 / foldwalls-uploader`；`.env` 只需填写帐户 ID、桶名和公开地址。CI 或非 macOS 环境再使用环境变量提供访问密钥。
 2. 先运行 `pnpm r2:migrate -- --dry-run` 检查对象 Key 和公开地址。
 3. 运行 `pnpm r2:migrate` 上传并按文件大小逐个校验。这个步骤只写入 R2 地址，`r2DeliveryEnabled` 始终保持关闭，因此线上客户端不受影响。
-4. 使用 `FOLDWALLS_PREFER_R2=1` 启动候选版，验证目录、封面、预览和应用原片；R2 失败会自动回退 Sanity。
-5. 新版发布并确认 Sparkle 可更新后，才运行：
+4. Worker 域名变化时，运行 `R2_PUBLIC_BASE_URL=https://... pnpm r2:rewrite-base` 只改写公开地址，不切流量。
+5. 使用 `FOLDWALLS_PREFER_R2=1` 启动候选版，验证目录、封面、预览和应用原片；R2 失败会自动回退 Sanity。
+6. 新版发布并确认 Sparkle 可更新后，才运行：
 
 ```sh
 R2_CUTOVER_CONFIRM=FOLDWALLS_R2_VERIFIED pnpm r2:cutover -- --enable

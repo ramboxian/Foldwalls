@@ -1,16 +1,44 @@
-import {Readable} from 'node:stream'
 import {getCliClient} from 'sanity/cli'
 import {HeadObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3'
+import {execFileSync} from 'node:child_process'
 
 const requiredEnvironment = [
   'R2_ACCOUNT_ID',
-  'R2_ACCESS_KEY_ID',
-  'R2_SECRET_ACCESS_KEY',
   'R2_BUCKET',
   'R2_PUBLIC_BASE_URL',
 ]
 const missing = requiredEnvironment.filter((name) => !process.env[name])
 if (missing.length) throw new Error(`Missing R2 environment variables: ${missing.join(', ')}`)
+
+function loadCredentials() {
+  if (process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY) {
+    return {
+      accessKeyId: process.env.R2_ACCESS_KEY_ID,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+    }
+  }
+
+  if (process.platform === 'darwin') {
+    try {
+      const stored = execFileSync('/usr/bin/security', [
+        'find-generic-password',
+        '-w',
+        '-s',
+        'com.foldwalls.r2',
+        '-a',
+        'foldwalls-uploader',
+      ], {encoding: 'utf8'}).trim()
+      const credentials = JSON.parse(stored)
+      if (credentials.accessKeyId && credentials.secretAccessKey) return credentials
+    } catch {
+      // Fall through to the actionable error below.
+    }
+  }
+
+  throw new Error('Missing R2 credentials. Set R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY, or install the Foldwalls uploader credential in macOS Keychain.')
+}
+
+const credentials = loadCredentials()
 
 const dryRun = process.argv.includes('--dry-run')
 const documentArgument = process.argv.find((value) => value.startsWith('--document-id='))
@@ -19,10 +47,7 @@ const client = getCliClient({apiVersion: '2026-08-06'})
 const r2 = new S3Client({
   region: 'auto',
   endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID,
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-  },
+  credentials,
 })
 const bucket = process.env.R2_BUCKET
 const publicBaseURL = process.env.R2_PUBLIC_BASE_URL.replace(/\/+$/, '')
@@ -72,16 +97,17 @@ async function uploadAsset(asset) {
     try {
       const response = await fetch(asset.url)
       if (!response.ok || !response.body) throw new Error(`Sanity download failed: ${response.status} ${asset.url}`)
+      const body = Buffer.from(await response.arrayBuffer())
       await r2.send(new PutObjectCommand({
         Bucket: bucket,
         Key: key,
-        Body: Readable.fromWeb(response.body),
-        ContentLength: Number(asset.size),
+        Body: body,
+        ContentLength: body.length,
         ContentType: asset.mimeType || response.headers.get('content-type') || 'application/octet-stream',
         CacheControl: 'public, max-age=31536000, immutable',
       }))
-      if (!(await objectMatches(asset, key))) throw new Error(`R2 size verification failed for ${key}`)
-      return {key, url: publicURL(key), size: asset.size}
+      if (!(await objectMatches({...asset, size: body.length}, key))) throw new Error(`R2 size verification failed for ${key}`)
+      return {key, url: publicURL(key), size: body.length}
     } catch (error) {
       lastError = error
       if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, attempt * 1500))

@@ -1,0 +1,15 @@
+name = "foldwalls-media"
+main = "src/index.js"
+compatibility_date = "2026-08-07"
+workers_dev = true
+preview_urls = false
+
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "foldwalls-media"
