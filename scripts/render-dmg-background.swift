@@ -144,7 +144,7 @@ drawCenteredText(
     color: NSColor.white.withAlphaComponent(0.90)
 )
 drawCenteredText(
-    "首次打开：右键 Foldwalls，选择「打开」",
+    "安装提示失败：请打开「系统设置 > 隐私与安全性」，选择「仍要打开」",
     y: 42,
     font: .systemFont(ofSize: 11.5, weight: .medium),
     color: NSColor.white.withAlphaComponent(0.48)
