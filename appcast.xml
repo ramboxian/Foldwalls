@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Foldwalls Updates</title>
+    <link>https://github.com/ramboxian/Foldwalls</link>
+    <description>Foldwalls stable release feed</description>
+    <language>zh-cn</language>
+    <item>
+      <title>Foldwalls 1.6.0</title>
+      <pubDate>Fri, 28 Aug 2026 00:59:40 +0800</pubDate>
+      <sparkle:version>16</sparkle:version>
+      <sparkle:shortVersionString>1.6.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0.0</sparkle:minimumSystemVersion>
+      <description sparkle:descriptionFormat="plain-text"><![CDATA[
+Foldwalls 1.6.0 带来更完整的 Pro 激活体验、更流畅的音乐桌面、更可靠的多显示器切换，以及 19 张全新动态壁纸。
+
+本次更新：
+- Pro 激活成功后新增完整庆祝页，清晰展示永久使用、全部 Pro 场景和 3 台 Mac 权益。
+- 音乐桌面改为实时跟随系统播放器，切歌、播放状态和进度响应更及时，并减少后台资源占用。
+- 提升专辑封面匹配与清晰度，增加多地区 Apple 曲库和 MusicBrainz / Cover Art Archive 回退，并修复网易云歌词与封面搜索。
+- 优化电影模式壁纸的下载、预览和桌面应用流程。
+- 修复多显示器下音乐桌面、普通壁纸和互动实验切换时互相覆盖的问题；退出后可恢复各显示器原有壁纸。
+- 优化视频循环解码与屏幕分辨率适配，降低长时间播放的资源占用。
+- 改进壁纸下载完整性检查和云端缩略图更新，避免损坏缓存或旧预览继续显示。
+- Faker 阅读入口更直接；看盘桌面的文字、涨跌和收益信息更清晰，显示比例上限提升。
+- 新增 19 张动态壁纸，包含黑猫系列、海风人像、动漫、星空与自然场景；三张黑猫壁纸升级为更高帧率版本。
+- 支持 Apple 芯片与 Intel Mac，最低支持 macOS 14.0。
+      ]]></description>
+      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v1.6.0/Foldwalls-1.6.0-macOS.zip" length="81968065" type="application/octet-stream" sparkle:edSignature="nTShw0cbe070v70JBO5QKCMkauiSKkfb6p/erU3i0Bx12cW9E2LMbWefiDSgcwLHV5Gd7SOXP1gkcEWwObHnCw==" />
+    </item>
+  </channel>
+</rss>
