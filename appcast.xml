@@ -6,26 +6,24 @@
     <description>Foldwalls stable release feed</description>
     <language>zh-cn</language>
     <item>
-      <title>Foldwalls 1.7.0</title>
-      <pubDate>Tue, 01 Sep 2026 00:18:20 +0800</pubDate>
-      <sparkle:version>17</sparkle:version>
-      <sparkle:shortVersionString>1.7.0</sparkle:shortVersionString>
+      <title>Foldwalls 1.7.1</title>
+      <pubDate>Tue, 01 Sep 2026 15:39:57 +0800</pubDate>
+      <sparkle:version>18</sparkle:version>
+      <sparkle:shortVersionString>1.7.1</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>14.0.0</sparkle:minimumSystemVersion>
       <description sparkle:descriptionFormat="plain-text"><![CDATA[
-Foldwalls 1.7.0 新增 AgentGuard 屏幕守护，让 Mac 在 AI 任务、下载和后台工作继续运行时，用 Foldwalls 壁纸保护本地屏幕。
+Foldwalls 1.7.1 重点改进 AgentGuard 的权限引导、Pro 权限控制和密码恢复，让屏幕守护更清晰、更安全。
 
 本次更新：
-- 新增 AgentGuard：可按 1 小时、2 小时、4 小时或无限时长保持电脑与显示器唤醒。
-- 新增多显示器壁纸守护；真人键盘和鼠标操作会被拦截，兼容的自动化与后台任务可继续运行。
-- 支持移动指针快速恢复，以及 Foldwalls 密码与可选 Touch ID 解锁。
-- 支持按真人无操作时长自动进入屏幕保护，自动化产生的输入不会被当作用户返回。
-- 新增简洁、信息流、时钟和极简四种守护样式，并可继续显示当前壁纸。
-- 新增异常退出后的会话恢复、网络状态和电源策略提示，避免保护状态悄然失效。
-- 在主窗口、菜单栏面板和设置中增加 AgentGuard 入口及首次使用引导。
-- AgentGuard 的输入保护需要在 macOS 系统设置中授予“辅助功能”和“输入监控”权限。
+- AgentGuard 新增“忘记密码”恢复：通过 macOS 验证当前 Mac 所有者后，可安全清除遗忘的 Foldwalls 密码并重新设置；Foldwalls 不会读取或保存 Mac 登录密码。
+- 将“辅助功能”和“输入监控”拆分为独立授权步骤，增加状态自动刷新和重新检测提示。
+- 修正保持唤醒关闭后工具栏仍显示运行中的状态。
+- 保留用户的屏幕保护与自动锁屏偏好，重新开启保持唤醒后可继续使用原设置。
+- 完善 AgentGuard Pro 权限校验；未激活 Pro 时不会意外启动保持唤醒、壁纸锁屏、定时锁屏或 Touch ID 解锁。
+- 改进主导航 Pro 标识与 AgentGuard 相关状态展示。
 - 支持 Apple 芯片与 Intel Mac，最低支持 macOS 14.0。
       ]]></description>
-      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v1.7.0/Foldwalls-1.7.0-macOS.zip" length="87316145" type="application/octet-stream" sparkle:edSignature="KsqkNMECs1zphOFreAUlrJW8/M3FuflqHbhwjDn9fgMU5Kfr2Wfk+vDtK4W2Yxpn1ycN1sljfrlmRcbhCVadAg==" />
+      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v1.7.1/Foldwalls-1.7.1-macOS.zip" length="87401651" type="application/octet-stream" sparkle:edSignature="xmnbtNxqbnJuTW0p4Z52an/8OvCFdvfqRlIf8Pt2WX7V2E9AzX70yB5jPBDimlNrWxp6LCwkw4YXGacIyTsBCA==" />
     </item>
   </channel>
 </rss>
