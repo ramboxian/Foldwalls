@@ -6,24 +6,25 @@
     <description>Foldwalls stable release feed</description>
     <language>zh-cn</language>
     <item>
-      <title>Foldwalls 1.7.1</title>
-      <pubDate>Tue, 01 Sep 2026 15:39:57 +0800</pubDate>
-      <sparkle:version>18</sparkle:version>
-      <sparkle:shortVersionString>1.7.1</sparkle:shortVersionString>
+      <title>Foldwalls 1.8.0</title>
+      <pubDate>Thu, 03 Sep 2026 16:26:51 +0800</pubDate>
+      <sparkle:version>19</sparkle:version>
+      <sparkle:shortVersionString>1.8.0</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>14.0.0</sparkle:minimumSystemVersion>
       <description sparkle:descriptionFormat="plain-text"><![CDATA[
-Foldwalls 1.7.1 重点改进 AgentGuard 的权限引导、Pro 权限控制和密码恢复，让屏幕守护更清晰、更安全。
+Foldwalls 1.8.0 adds six new Music Desktop scenes, a customizable AgentGuard lock shortcut, and smoother scene browsing.
 
 本次更新：
-- AgentGuard 新增“忘记密码”恢复：通过 macOS 验证当前 Mac 所有者后，可安全清除遗忘的 Foldwalls 密码并重新设置；Foldwalls 不会读取或保存 Mac 登录密码。
-- 将“辅助功能”和“输入监控”拆分为独立授权步骤，增加状态自动刷新和重新检测提示。
-- 修正保持唤醒关闭后工具栏仍显示运行中的状态。
-- 保留用户的屏幕保护与自动锁屏偏好，重新开启保持唤醒后可继续使用原设置。
-- 完善 AgentGuard Pro 权限校验；未激活 Pro 时不会意外启动保持唤醒、壁纸锁屏、定时锁屏或 Touch ID 解锁。
-- 改进主导航 Pro 标识与 AgentGuard 相关状态展示。
+- 音乐桌面新增“琥珀光影”“陶土暖桌”“海岸微风”“日光唱台”“池畔余晖”和“晴海帆影” 6 套复古唱机场景。
+- 高清场景素材改为按需从 Foldwalls 正式云端下载并支持离线缓存，安装包仅携带轻量预览图。
+- 优化音乐场景的预览、图片解码和预热方式，减少滚动和首次显示时的卡顿。
+- 优化唱片、封面和唱臂的分层效果，让播放中的专辑封面更自然地融入场景。
+- AgentGuard 新增全局锁屏快捷键，默认为 ⌃Q，也可在设置中录入自定义组合键。
+- 改进 AgentGuard 的快捷键冲突提示、恢复流程和锁定状态反馈。
+- 调整音乐控制面板和设置布局，在较小窗口中也能更完整地显示。
 - 支持 Apple 芯片与 Intel Mac，最低支持 macOS 14.0。
       ]]></description>
-      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v1.7.1/Foldwalls-1.7.1-macOS.zip" length="87401651" type="application/octet-stream" sparkle:edSignature="xmnbtNxqbnJuTW0p4Z52an/8OvCFdvfqRlIf8Pt2WX7V2E9AzX70yB5jPBDimlNrWxp6LCwkw4YXGacIyTsBCA==" />
+      <enclosure url="https://github.com/ramboxian/Foldwalls/releases/download/v1.8.0/Foldwalls-1.8.0-macOS.zip" length="91737301" type="application/octet-stream" sparkle:edSignature="xNmsd178hWqlyk8XAhGwdgyMJ4s16wsqHABgqj/RIQRBeuCywLi7MzvmPFr/xlqa5bpevUBUJzrf91Ec2ZCpDA==" />
     </item>
   </channel>
 </rss>
